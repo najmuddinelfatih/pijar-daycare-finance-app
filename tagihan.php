@@ -5,6 +5,20 @@ $host = "localhost"; $user = "u516826482_financeuser"; $pass = "o&3Sxtf/aO7?"; $
 $conn = new mysqli($host, $user, $pass, $dbname);
 if ($conn->connect_error) die(json_encode(["error"=>"Koneksi gagal"]));
 
+function simpanBukti($field) {
+  if (isset($_FILES[$field]) && $_FILES[$field]['tmp_name']) {
+    $ext = pathinfo($_FILES[$field]['name'], PATHINFO_EXTENSION);
+    $newName = uniqid("bukti_") . "." . strtolower($ext);
+    $folder = "uploads/";
+    if (!file_exists($folder)) mkdir($folder, 0777, true);
+    $target = $folder . $newName;
+    if (move_uploaded_file($_FILES[$field]['tmp_name'], $target)) {
+      return $target;
+    }
+  }
+  return '';
+}
+
 $aksi = $_GET['aksi'] ?? 'list';
 
 // GET / LIST
@@ -22,19 +36,17 @@ else if ($aksi == 'tambah') {
   $keterangan = $_POST['keterangan'] ?? '';
   $nominal = $_POST['nominal'] ?? 0;
   $status = $_POST['status'] ?? 'Belum Lunas';
-  $tgl_tagihan = $_POST['tgl_tagihan'] ?? date('Y-m-d');
-  $bukti_bayar = "";
-  // Handle file upload
-  if (isset($_FILES['bukti_bayar'])) {
-    $fname = time().'_'.basename($_FILES['bukti_bayar']['name']);
-    move_uploaded_file($_FILES['bukti_bayar']['tmp_name'], "../uploads/$fname");
-    $bukti_bayar = "uploads/$fname";
-  }
-  $q = $conn->prepare("INSERT INTO tagihan (nama_siswa, wali_wa, bulan, keterangan, nominal, status, bukti_bayar, tgl_tagihan) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-  $q->bind_param("ssssisss", $nama_siswa, $wali_wa, $bulan, $keterangan, $nominal, $status, $bukti_bayar, $tgl_tagihan);
+  $tgl_tagihan = $_POST['tgl_tagihan'] ?? '';
+  $bukti = simpanBukti('bukti_bayar');
+
+  $q = $conn->prepare("INSERT INTO tagihan (nama_siswa, wali_wa, bulan, keterangan, nominal, status, tgl_tagihan, bukti_bayar)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+  $q->bind_param("ssssisss", $nama_siswa, $wali_wa, $bulan, $keterangan, $nominal, $status, $tgl_tagihan, $bukti);
   $ok = $q->execute();
-  echo json_encode(["success"=>$ok]);
+  echo json_encode(["success" => $ok]);
 }
+
+
 // EDIT
 else if ($aksi == 'edit') {
   $id = $_POST['id'] ?? 0;
@@ -44,19 +56,18 @@ else if ($aksi == 'edit') {
   $keterangan = $_POST['keterangan'] ?? '';
   $nominal = $_POST['nominal'] ?? 0;
   $status = $_POST['status'] ?? 'Belum Lunas';
-  $tgl_tagihan = $_POST['tgl_tagihan'] ?? date('Y-m-d');
-  $tgl_bayar = ($status == "Lunas") ? date('Y-m-d H:i:s') : NULL;
-  $bukti_bayar = $_POST['bukti_bayar_old'] ?? "";
-  if (isset($_FILES['bukti_bayar'])) {
-    $fname = time().'_'.basename($_FILES['bukti_bayar']['name']);
-    move_uploaded_file($_FILES['bukti_bayar']['tmp_name'], "../uploads/$fname");
-    $bukti_bayar = "uploads/$fname";
-  }
-  $q = $conn->prepare("UPDATE tagihan SET nama_siswa=?, wali_wa=?, bulan=?, keterangan=?, nominal=?, status=?, bukti_bayar=?, tgl_tagihan=?, tgl_bayar=? WHERE id=?");
-  $q->bind_param("ssssissssi", $nama_siswa, $wali_wa, $bulan, $keterangan, $nominal, $status, $bukti_bayar, $tgl_tagihan, $tgl_bayar, $id);
+  $tgl_tagihan = $_POST['tgl_tagihan'] ?? '';
+  $bukti_lama = $_POST['bukti_bayar_old'] ?? '';
+  $bukti_baru = simpanBukti('bukti_bayar');
+
+  $bukti_final = $bukti_baru ? $bukti_baru : $bukti_lama;
+
+  $q = $conn->prepare("UPDATE tagihan SET nama_siswa=?, wali_wa=?, bulan=?, keterangan=?, nominal=?, status=?, tgl_tagihan=?, bukti_bayar=? WHERE id=?");
+  $q->bind_param("ssssisssi", $nama_siswa, $wali_wa, $bulan, $keterangan, $nominal, $status, $tgl_tagihan, $bukti_final, $id);
   $ok = $q->execute();
-  echo json_encode(["success"=>$ok]);
+  echo json_encode(["success" => $ok]);
 }
+
 // HAPUS
 else if ($aksi == 'hapus') {
   $id = $_POST['id'] ?? 0;

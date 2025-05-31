@@ -1,6 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 header("Access-Control-Allow-Origin: *");
-
 $host = "localhost";
 $user = "u516826482_financeuser";
 $pass = "o&3Sxtf/aO7?";
@@ -10,7 +11,7 @@ $conn = new mysqli($host, $user, $pass, $dbname);
 if ($conn->connect_error) die("DB error");
 
 // Tabel-tabel yang mau di-backup
-$tables = ["user", "akun_kas", "kategori", "notifikasi", "preferensi", "transaksi", "tagihan"];
+$tables = ["user", "akun_kas", "kategori", "notifikasi", "preferensi", "transaksi",];
 
 if (isset($_GET['aksi']) && $_GET['aksi'] == 'download') {
     $zip = new ZipArchive();
