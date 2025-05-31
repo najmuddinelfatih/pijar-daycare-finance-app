@@ -16,9 +16,8 @@ function formatTanggal(dt) {
   return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
 }
 
-const warnaPie = ["#14b8a6", "#0ea5e9", "#f59e42", "#e11d48", "#6366f1"];
-
 export default function Laporan() {
+  const router = useRouter();
   const [tab, setTab] = useState("aruskas");
   const [transaksi, setTransaksi] = useState([]);
   const [filterStart, setFilterStart] = useState("");

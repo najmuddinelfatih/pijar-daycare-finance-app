@@ -7,25 +7,7 @@ import dynamic from "next/dynamic";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { Paperclip, CheckCircle, XCircle, Send } from "lucide-react";
-function MyApp({ Component, pageProps }) {
-  return (
-    <ErrorBoundary>
-      <Component {...pageProps} />
-    </ErrorBoundary>
-  );
-}
-class ErrorBoundary extends React.Component {
-  state = { hasError: false, error: null }
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
-  render() {
-    if (this.state.hasError) {
-      return <div style={{color: "red"}}>Error: {this.state.error?.message}</div>;
-    }
-    return this.props.children;
-  }
-}
+
 const DataTable = dynamic(() => import("react-data-table-component"), { ssr: false });
 
 const customStyles = {

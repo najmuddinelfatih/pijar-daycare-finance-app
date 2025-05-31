@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import Sidebar from "../components/Sidebar";
-import { Pencil, Trash2, Plus, Eye, Upload, LockKeyhole, Bell, Settings, FileText, ShieldCheck, Save, HelpCircle, RefreshCcw, Paintbrush2 } from "lucide-react";
+import { Eye, Bell, Settings, FileText, ShieldCheck, Save, HelpCircle, RefreshCcw, Paintbrush2 } from "lucide-react";
 import PengaturanIdentitas from "../components/PengaturanIdentitas";
 import PengaturanAkunKas from "../components/PengaturanAkunKas";
 import PengaturanKategori from "../components/PengaturanKategori";
@@ -71,7 +71,7 @@ export default function Pengaturan() {
   }
   
 
-  // --- Fungsi CRUD dummy ---
+  // // --- Fungsi CRUD dummy ---
   function tambahAkun(e) {
     e.preventDefault();
     if (editAkunId) {

@@ -1,20 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { loginUser } from "../lib/apiUser";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 export default function Login() {
   const router = useRouter();
+  const [authChecked, setAuthChecked] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   // Jika sudah login, auto-redirect
-  React.useEffect(() => {
-    if (typeof window !== "undefined" && localStorage.getItem("user")) {
-      router.replace("/"); // redirect ke dashboard
-    }
-  }, []);
+  useEffect(() => {
+      if (typeof window !== "undefined") {
+        const user = localStorage.getItem("user");
+        if (!user) {
+          router.replace("/login");
+        } else {
+          setAuthChecked(true);
+        }
+      }
+    }, [router]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -70,7 +77,7 @@ export default function Login() {
           {loading ? "Memproses..." : "Login"}
         </button>
         <div className="mt-2 text-center">
-          <a href="/forgot-password" className="text-blue-500 hover:underline text-sm">Lupa password?</a>
+          <Link href="/forgot-password" className="text-blue-500 hover:underline text-sm">Lupa password?</Link>
         </div>
         {errorMsg && <div className="text-red-600 text-sm text-center">{errorMsg}</div>}
       </form>

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { fetchTagihan, tambahTagihan, editTagihan, hapusTagihan } from "../lib/apiTagihan";
-import { Paperclip, FileText, CheckCircle, XCircle, Send } from "lucide-react";
+import { Paperclip, CheckCircle, XCircle, Send } from "lucide-react";
 
 export default function Tagihan() {
   const [data, setData] = useState([]);

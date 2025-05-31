@@ -7,14 +7,14 @@ import {
 } from "../lib/apiUser";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import { Edit, Trash2, KeyRound, UserCheck, UserX, Plus, MoreVertical } from "lucide-react";
+import { Edit, Trash2, KeyRound, UserCheck, UserX, Plus } from "lucide-react";
 
 export default function Pengguna() {
   const router = useRouter();
   const [authChecked, setAuthChecked] = useState(false);
   // State
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [showModal, setShowModal] = useState(false);

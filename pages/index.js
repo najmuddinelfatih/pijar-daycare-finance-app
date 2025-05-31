@@ -6,7 +6,7 @@ import { fetchTagihan } from "../lib/apiTagihan";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { Bell, Clock, Users, TrendingUp, TrendingDown } from "lucide-react";
 import ReminderOperasionalTable from "../components/ReminderOperasionalTable";
-import { format, isBefore, parseISO, startOfDay } from "date-fns";
+import { isBefore, parseISO, startOfDay } from "date-fns";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -15,7 +15,7 @@ export default function Dashboard() {
   const [authChecked, setAuthChecked] = useState(false);
   const [transaksi, setTransaksi] = useState([]);
   const [tagihan, setTagihan] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const COLORS = ["#6366f1", "#14b8a6", "#ef4444", "#f59e42", "#0ea5e9", "#6366f1", "#a855f7"];
 
   // 2. Cek login di useEffect pertama, lalu baru render dashboard
