@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import {
   fetchTransaksi,
   tambahTransaksi,
@@ -128,7 +129,7 @@ export default function CRUDTransaksi() {
       });
       setSuccessMsg("Data berhasil disimpan!");
       await loadAll();
-    } catch (e) {
+    } catch {
       setErrorMsg("Gagal menyimpan data. " + e.message);
     }
   }
@@ -138,7 +139,7 @@ export default function CRUDTransaksi() {
     try {
       await hapusTransaksi(id);
       await loadAll();
-    } catch (e) {
+    } catch {
       setErrorMsg("Gagal menghapus data.");
     }
   }
@@ -321,7 +322,7 @@ export default function CRUDTransaksi() {
             <div className="flex gap-3 items-center">
               {previewBukti && (
                 <a href={previewBukti} target="_blank" rel="noopener noreferrer">
-                  <img src={previewBukti} alt="Bukti" className="h-12 rounded border" />
+                  <Image src={previewBukti} alt="Bukti" className="h-12 rounded border" />
                 </a>
               )}
               <input

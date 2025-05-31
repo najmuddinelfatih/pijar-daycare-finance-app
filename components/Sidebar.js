@@ -11,7 +11,7 @@ const menus = [
   { label: "Pengguna", href: "/pengguna" },
   { label: "Pengaturan", href: "/pengaturan" },
 ];
-const user = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "{}") : {};
+// const user = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "{}") : {};
 
 function handleLogout() {
   localStorage.removeItem("user");

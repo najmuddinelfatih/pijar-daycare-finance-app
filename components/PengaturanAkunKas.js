@@ -25,13 +25,13 @@ export default function PengaturanAkunKas() {
       const data = await fetchAkunKas();
       setAkunKas(data);
       setErrorMsg("");
-    } catch (e) {
+    } catch {
       setErrorMsg("Gagal mengambil data akun kas.");
     }
     setLoading(false);
   }
 
-  async function handleSubmit(e) {
+  async function handleSubmit() {
     e.preventDefault();
     try {
       if (editId) {
@@ -43,7 +43,7 @@ export default function PengaturanAkunKas() {
       setForm({ nama: "", tipe: "Kas", norek: "", ket: "" });
       setEditId(null);
       await loadAkunKas();
-    } catch (e) {
+    } catch {
       setErrorMsg("Gagal menyimpan data. Cek koneksi/server.");
     }
   }
@@ -53,7 +53,7 @@ export default function PengaturanAkunKas() {
     try {
       await hapusAkunKas(id);
       await loadAkunKas();
-    } catch (e) {
+    } catch {
       setErrorMsg("Gagal menghapus data.");
     }
   }

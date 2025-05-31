@@ -18,12 +18,13 @@ function formatTanggal(dt) {
 
 export default function Laporan() {
   const router = useRouter();
+  const [authChecked, setAuthChecked] = useState(false);
   const [tab, setTab] = useState("aruskas");
   const [transaksi, setTransaksi] = useState([]);
   const [filterStart, setFilterStart] = useState("");
   const [filterEnd, setFilterEnd] = useState("");
 
-  useEffect(() => { fetchTransaksi().then(setTransaksi); }, []);
+  useEffect(() => { fetchTransaksi().then(setTransaksi); }, [router, authChecked]);
 
   // Filter
   const filtered = transaksi.filter(t => {

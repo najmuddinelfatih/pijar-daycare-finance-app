@@ -14,45 +14,45 @@ import PengaturanHelp from "../components/PengaturanHelp";
 
 
 // Dummy komponen upload logo (cropping bisa dikembangkan)
-function LogoUploader({ value, onChange }) {
-  const fileInputRef = useRef();
-  const [preview, setPreview] = useState(value || "");
-  function handleFile(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      setPreview(ev.target.result);
-      onChange(ev.target.result);
-    };
-    reader.readAsDataURL(file);
-  }
-  return (
-    <div className="flex flex-col items-center gap-2">
-      <img src={preview || "/logo-daycare.png"} alt="Logo" className="h-20 w-20 object-contain border rounded-xl bg-gray-100" />
-      <button
-        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-blue-500 text-white font-bold shadow hover:bg-blue-600 text-sm"
-        onClick={() => fileInputRef.current.click()}
-        type="button"
-      >
-        <Upload size={16} /> Upload Logo
-      </button>
-      <input type="file" className="hidden" ref={fileInputRef} accept="image/*" onChange={handleFile} />
-    </div>
-  );
-}
+// function LogoUploader({ value, onChange }) {
+//   const fileInputRef = useRef();
+//   const [preview, setPreview] = useState(value || "");
+//   function handleFile(e) {
+//     const file = e.target.files[0];
+//     if (!file) return;
+//     const reader = new FileReader();
+//     reader.onload = ev => {
+//       setPreview(ev.target.result);
+//       onChange(ev.target.result);
+//     };
+//     reader.readAsDataURL(file);
+//   }
+//   return (
+//     <div className="flex flex-col items-center gap-2">
+//       <img src={preview || "/logo-daycare.png"} alt="Logo" className="h-20 w-20 object-contain border rounded-xl bg-gray-100" />
+//       <button
+//         className="flex items-center gap-2 px-3 py-2 rounded-xl bg-blue-500 text-white font-bold shadow hover:bg-blue-600 text-sm"
+//         onClick={() => fileInputRef.current.click()}
+//         type="button"
+//       >
+//         <Upload size={16} /> Upload Logo
+//       </button>
+//       <input type="file" className="hidden" ref={fileInputRef} accept="image/*" onChange={handleFile} />
+//     </div>
+//   );
+// }
 
 export default function Pengaturan() {
   const router = useRouter();
   const [authChecked, setAuthChecked] = useState(false);
   const [tab, setTab] = useState("identitas");
-  const [akunForm, setAkunForm] = useState({ nama: "", tipe: "Kas", norek: "", ket: "" });
-  const [showAkunForm, setShowAkunForm] = useState(false);
-  const [editAkunId, setEditAkunId] = useState(null);
+  // const [akunForm, setAkunForm] = useState({ nama: "", tipe: "Kas", norek: "", ket: "" });
+  // // const [showAkunForm, setShowAkunForm] = useState(false);
+  // const [editAkunId, setEditAkunId] = useState(null);
   
-  const [kategoriForm, setKategoriForm] = useState({ nama: "", jenis: "Pemasukan" });
-  const [showKategoriForm, setShowKategoriForm] = useState(false);
-  const [editKategoriId, setEditKategoriId] = useState(null);
+  // const [kategoriForm, setKategoriForm] = useState({ nama: "", jenis: "Pemasukan" });
+  // // const [showKategoriForm, setShowKategoriForm] = useState(false);
+  // const [editKategoriId, setEditKategoriId] = useState(null);
   
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -72,52 +72,52 @@ export default function Pengaturan() {
   
 
   // // --- Fungsi CRUD dummy ---
-  function tambahAkun(e) {
-    e.preventDefault();
-    if (editAkunId) {
-      setAkunKas(list => list.map(a => a.id === editAkunId ? { ...akunForm, id: editAkunId } : a));
-    } else {
-      setAkunKas(list => [...list, { ...akunForm, id: Date.now() }]);
-    }
-    setAkunForm({ nama: "", tipe: "Kas", norek: "", ket: "" });
-    setShowAkunForm(false);
-    setEditAkunId(null);
-  }
-  function editAkun(akun) {
-    setAkunForm(akun);
-    setEditAkunId(akun.id);
-    setShowAkunForm(true);
-  }
-  function hapusAkun(id) {
-    setAkunKas(list => list.filter(a => a.id !== id));
-  }
-  function tambahKategori(e) {
-    e.preventDefault();
-    if (editKategoriId) {
-      setKategori(list => list.map(k => k.id === editKategoriId ? { ...kategoriForm, id: editKategoriId } : k));
-    } else {
-      setKategori(list => [...list, { ...kategoriForm, id: Date.now() }]);
-    }
-    setKategoriForm({ nama: "", jenis: "Pemasukan" });
-    setShowKategoriForm(false);
-    setEditKategoriId(null);
-  }
-  function editKategori(kat) {
-    setKategoriForm(kat);
-    setEditKategoriId(kat.id);
-    setShowKategoriForm(true);
-  }
-  function hapusKategori(id) {
-    setKategori(list => list.filter(k => k.id !== id));
-  }
-  function doBackup() {
-    setBackupMsg("Backup berhasil didownload (dummy)!");
-    setTimeout(() => setBackupMsg(""), 2000);
-  }
-  function doRestore(e) {
-    setBackupMsg("Restore data berhasil (dummy)!");
-    setTimeout(() => setBackupMsg(""), 2000);
-  }
+  // function tambahAkun(e) {
+  //   e.preventDefault();
+  //   if (editAkunId) {
+  //     setAkunKas(list => list.map(a => a.id === editAkunId ? { ...akunForm, id: editAkunId } : a));
+  //   } else {
+  //     setAkunKas(list => [...list, { ...akunForm, id: Date.now() }]);
+  //   }
+  //   setAkunForm({ nama: "", tipe: "Kas", norek: "", ket: "" });
+  //   setShowAkunForm(false);
+  //   setEditAkunId(null);
+  // }
+  // function editAkun(akun) {
+  //   setAkunForm(akun);
+  //   setEditAkunId(akun.id);
+  //   setShowAkunForm(true);
+  // }
+  // function hapusAkun(id) {
+  //   setAkunKas(list => list.filter(a => a.id !== id));
+  // }
+  // function tambahKategori(e) {
+  //   e.preventDefault();
+  //   if (editKategoriId) {
+  //     setKategori(list => list.map(k => k.id === editKategoriId ? { ...kategoriForm, id: editKategoriId } : k));
+  //   } else {
+  //     setKategori(list => [...list, { ...kategoriForm, id: Date.now() }]);
+  //   }
+  //   setKategoriForm({ nama: "", jenis: "Pemasukan" });
+  //   setShowKategoriForm(false);
+  //   setEditKategoriId(null);
+  // }
+  // function editKategori(kat) {
+  //   setKategoriForm(kat);
+  //   setEditKategoriId(kat.id);
+  //   setShowKategoriForm(true);
+  // }
+  // function hapusKategori(id) {
+  //   setKategori(list => list.filter(k => k.id !== id));
+  // }
+  // function doBackup() {
+  //   setBackupMsg("Backup berhasil didownload (dummy)!");
+  //   setTimeout(() => setBackupMsg(""), 2000);
+  // }
+  // function doRestore(e) {
+  //   setBackupMsg("Restore data berhasil (dummy)!");
+  //   setTimeout(() => setBackupMsg(""), 2000);
+  // }
 
   // UI Tab
   return (

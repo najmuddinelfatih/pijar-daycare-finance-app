@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { fetchIdentitas, updateIdentitas } from "../lib/apiIdentitas"; // sesuaikan path
+import Image from "next/image";
+
 
 export default function PengaturanIdentitas() {
-  const [identitas, setIdentitas] = useState({ nama: "", logo: "" });
+  // const [identitas, setIdentitas] = useState({ nama: "", logo: "" });
   const [loading, setLoading] = useState(true);
   const [formNama, setFormNama] = useState("");
   const [formLogo, setFormLogo] = useState(null);
@@ -23,20 +25,20 @@ export default function PengaturanIdentitas() {
       setFormNama(data.nama || "");
       setPreviewLogo(data.logo ? (data.logo.startsWith("http") ? data.logo : "/" + data.logo) : "");
       setErrorMsg("");
-    } catch (e) {
+    } catch {
       setErrorMsg("Gagal mengambil data identitas.");
     }
     setLoading(false);
   }
 
-  function handleFileChange(e) {
+  function handleFileChange() {
     const file = e.target.files[0];
     if (!file) return;
     setFormLogo(file);
     setPreviewLogo(URL.createObjectURL(file));
   }
 
-  async function handleSubmit(e) {
+  async function handleSubmit() {
     e.preventDefault();
     setErrorMsg("");
     setSuccessMsg("");
@@ -45,7 +47,7 @@ export default function PengaturanIdentitas() {
       setSuccessMsg("Data berhasil disimpan!");
       setFormLogo(null);
       await loadIdentitas();
-    } catch (e) {
+    } catch {
       setErrorMsg("Gagal menyimpan data.");
     }
   }
@@ -71,7 +73,7 @@ export default function PengaturanIdentitas() {
           <div>
             <label className="block font-semibold mb-1">Logo Daycare</label>
             <div className="flex gap-3 items-center">
-              <img
+              <Image
                 src={previewLogo || "/pijar-daycare-logo.png"}
                 alt="Logo"
                 className="h-20 w-20 object-contain border rounded-xl bg-gray-100"

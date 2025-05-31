@@ -4,9 +4,8 @@ import Sidebar from "../components/Sidebar";
 import Modal from "../components/Modal";
 import dynamic from "next/dynamic";
 import {
-  Calendar, Wallet, FileText, Coins, Eye, Download, Hash, MoreVertical, Edit, Trash2, Receipt
+  Calendar, FileText, Coins, Eye, Hash, Edit, Trash2, Receipt
 } from "lucide-react";
-import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
@@ -18,8 +17,7 @@ import {
 } from "../lib/apiTransaksi";
 import { fetchAkunKas } from "../lib/apiAkunKas";
 import { fetchKategori } from "../lib/apiKategori";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+import Image from "next/image";
 
 const DataTable = dynamic(() => import("react-data-table-component"), { ssr: false });
 
@@ -223,7 +221,7 @@ export default function Transaksi() {
   const [data, setData] = useState([]);
   const [akunKas, setAkunKas] = useState([]);
   const [kategoriList, setKategoriList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [kategoriFilter, setKategoriFilter] = useState("");
   const [jenisFilter, setJenisFilter] = useState("");
   const [dateStart, setDateStart] = useState("");
@@ -256,7 +254,7 @@ export default function Transaksi() {
         setAuthChecked(true); // Sudah cek login, boleh render
       }
     }
-  }, []);
+  }, [router, authChecked]);
 
   // ===== FETCH DATA =====
   useEffect(() => {
@@ -272,7 +270,7 @@ export default function Transaksi() {
         setAkunKas(ak);
         setKategoriList(kg);
         setErrorMsg("");
-      } catch (e) {
+      } catch {
         setErrorMsg("Gagal mengambil data dari server.");
       }
       setLoading(false);
@@ -674,7 +672,7 @@ const saldoBank = data
           <div className="flex flex-col items-center gap-4 p-2">
             {buktiUrl && (
               <Zoom>
-                <img src={`https://pijarmontessoriislam.id/api/${buktiUrl}`} alt="Bukti" className="max-h-[400px] w-auto rounded shadow" />
+                <Image  src={`https://pijarmontessoriislam.id/api/${buktiUrl}`} alt="Bukti" className="max-h-[400px] w-auto rounded shadow" />
               </Zoom>
             )}
           </div>

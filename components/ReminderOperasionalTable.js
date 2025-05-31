@@ -6,8 +6,10 @@ import {
 } from "../lib/apiReminderOperasional";
 import { Edit, Trash2, Plus, CheckCircle } from "lucide-react";
 import { format } from "date-fns";
+import { useRouter } from "next/router";
 
 export default function ReminderOperasionalTable() {
+  const router = useRouter();
   const [list, setList] = useState([]);
   const [form, setForm] = useState({ nama: "", nominal: "", tanggal_rutin: "1", keterangan: "" });
   const [showModal, setShowModal] = useState(false);
@@ -17,7 +19,7 @@ export default function ReminderOperasionalTable() {
   const now = new Date();
   const bulan_tahun = format(now, "yyyy-MM");
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { loadData(); }, [router]);
   async function loadData() {
     // Cek dan repeat data bulan sebelumnya jika kosong!
     const data = await fetchReminderOperasional(bulan_tahun);

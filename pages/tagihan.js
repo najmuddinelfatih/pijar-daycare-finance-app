@@ -85,7 +85,7 @@ export default function Tagihan() {
         setAuthChecked(true);
       }
     }
-  }, []);
+  }, [router, authChecked]);
 
     // === FETCH DATA ===
   useEffect(() => { loadData(); }, []);

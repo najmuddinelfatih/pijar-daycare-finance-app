@@ -14,15 +14,15 @@ export default function PengaturanHelp() {
         </li>
         <li>
           <b>Bagaimana upload bukti transfer atau kwitansi?</b>
-          <br />Di halaman Transaksi, pilih tambah/edit, lalu upload file bukti pada kolom "Bukti Transfer".
+          <br />Di halaman Transaksi, pilih tambah/edit, lalu upload file bukti pada kolom <b>Bukti Transfer</b>.
         </li>
         <li>
           <b>Bagaimana merubah logo dan nama daycare?</b>
-          <br />Buka tab <b>Identitas</b>, klik "Pilih Logo", dan simpan perubahan.
+          <br />Buka tab <b>Identitas</b>, klik <b>Pilih Logo</b>, dan simpan perubahan.
         </li>
         <li>
           <b>Bagaimana jika lupa password?</b>
-          <br />Hubungi admin daycare untuk reset password via fitur "Reset Password" di tab Hak Akses.
+          <br />Hubungi admin daycare untuk reset password via fitur <b>Reset Password</b> di tab Hak Akses.
         </li>
         <li>
           <b>Jika ada kendala/error aplikasi?</b>

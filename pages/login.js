@@ -21,7 +21,7 @@ export default function Login() {
           setAuthChecked(true);
         }
       }
-    }, [router]);
+    }, [router, authChecked]);
 
   async function handleSubmit(e) {
     e.preventDefault();

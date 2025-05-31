@@ -40,7 +40,7 @@ export default function Pengguna() {
     // Fetch data
   useEffect(() => {
     loadUsers();
-  }, []);
+  }, [router, authChecked]);
   async function loadUsers() {
     setLoading(true);
     try {

@@ -24,14 +24,14 @@ export default function PengaturanKategori() {
       const data = await fetchKategori();
       setKategori(data);
       setErrorMsg("");
-    } catch (e) {
+    } catch {
       setErrorMsg("Gagal mengambil data kategori.");
     }
     setLoading(false);
   }
 
   async function handleSubmit(e) {
-    e.preventDefault();
+    preventDefault();
     try {
       if (editId) {
         await editKategori({ ...form, id: editId });
@@ -42,7 +42,7 @@ export default function PengaturanKategori() {
       setForm({ nama: "", jenis: "Pemasukan" });
       setEditId(null);
       await loadKategori();
-    } catch (e) {
+    } catch {
       setErrorMsg("Gagal menyimpan data. Cek koneksi/server.");
     }
   }
@@ -52,7 +52,7 @@ export default function PengaturanKategori() {
     try {
       await hapusKategori(id);
       await loadKategori();
-    } catch (e) {
+    } catch {
       setErrorMsg("Gagal menghapus data.");
     }
   }
