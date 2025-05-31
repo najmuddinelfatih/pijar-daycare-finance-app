@@ -25,15 +25,9 @@ export default function ReminderOperasionalTable() {
   useEffect(() => {
     const u = localStorage.getItem("user");
     if (u) setUser(JSON.parse(u));
-  }, [router]);
-
-  const loadData = useCallback(async () => {
-    setData(await fetchReminderOperasional());
   }, []);
 
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  useEffect(() => { loadData(); }, [router]);
   async function loadData() {
     // Cek dan repeat data bulan sebelumnya jika kosong!
     const data = await fetchReminderOperasional(bulan_tahun);
