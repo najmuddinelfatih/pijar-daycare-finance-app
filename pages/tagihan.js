@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { fetchTagihan, tambahTagihan, editTagihan, hapusTagihan } from "../lib/apiTagihan";
-import Sidebar from "../components/Sidebar";
 import Modal from "../components/Modal";
 import dynamic from "next/dynamic";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { Paperclip, CheckCircle, XCircle, Send } from "lucide-react";
+import { hasAccess } from "../lib/akses";
 
 const DataTable = dynamic(() => import("react-data-table-component"), { ssr: false });
 
@@ -74,7 +74,12 @@ export default function Tagihan() {
   const [filterStatus, setFilterStatus] = useState("");
   const fileRefAdd = useRef();
   const fileRefEdit = useRef();
+  const [user, setUser] = useState(null);
 
+  useEffect(() => {
+    const u = localStorage.getItem("user");
+    if (u) setUser(JSON.parse(u));
+  }, []);
   // === LOGIN CHECK, NO RENDER UNTIL AUTH CHECKED ===
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -95,6 +100,7 @@ export default function Tagihan() {
   if (!authChecked) {
     return <div className="min-h-screen flex items-center justify-center bg-gray-50">Loading...</div>;
   }
+  if (!user) return null;
   
   // === HANDLERS ===
   const handleAddChange = e => setAddForm({ ...addForm, [e.target.name]: e.target.value });
@@ -242,13 +248,13 @@ export default function Tagihan() {
       name: "Aksi",
       cell: row => (
         <div className="flex flex-wrap gap-2">
-          <button
+          {hasAccess(user.role, "edit") && <button
             className="text-blue-500 hover:text-blue-700 px-2 underline"
             onClick={() => handleOpenEdit(row)}
           >
             Edit
-          </button>
-          <button
+          </button>}
+          {hasAccess(user.role, "edit") && <button
             className="text-red-500 hover:text-red-700 px-2 underline"
             onClick={() => {
               setShowDeleteModal(true);
@@ -256,16 +262,15 @@ export default function Tagihan() {
             }}
           >
             Hapus
-          </button>
+          </button>}
           {row.status !== "Lunas" &&
-            <button
+            hasAccess(user.role, "edit") && <button
               className="text-green-600 hover:text-green-800 px-2 underline flex items-center gap-1"
               onClick={() => handleOpenWA(row)}
               title="Kirim WhatsApp"
             >
               <Send size={16} /> WA
-            </button>
-          }
+            </button>}
         </div>
       ),
       ignoreRowClick: true,
@@ -278,38 +283,38 @@ export default function Tagihan() {
   // --- Render ---
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
-      <Sidebar />
+      {/* <Sidebar /> */}
       <main className="flex-1 px-2 sm:px-6 py-6 max-w-9/10 mx-auto w-full">
         {/* Header + Filter/Search */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-teal-600">Tagihan Siswa</h1>
-            <button
+            {hasAccess(user.role, "edit") && <button
               className="mt-1 text-xs text-teal-500 hover:underline"
               onClick={() => setShowTemplateModal(true)}
             >
               📝 Edit Template WhatsApp
-            </button>
+            </button>}
           </div>
           <div className="flex gap-2 flex-wrap">
-            <button
+            {hasAccess(user.role, "edit") && <button
               className="px-4 py-2 rounded-2xl bg-gradient-to-r from-teal-400 to-blue-500 text-white font-bold shadow hover:brightness-110 transition text-sm"
               onClick={() => setShowAddModal(true)}
             >
               + Tambah Tagihan
-            </button>
-            <button
+            </button>}
+            {hasAccess(user.role, "edit") && <button
               className="px-4 py-2 rounded-2xl bg-green-500 text-white font-bold shadow hover:bg-green-600 transition text-sm"
               onClick={handleBulkWhatsApp}
             >
               Kirim WhatsApp Massal
-            </button>
-            <button
+            </button>}
+            {hasAccess(user.role, "edit") && <button
               className="px-4 py-2 rounded-2xl bg-blue-500 text-white font-bold shadow hover:bg-blue-600 transition text-sm"
               onClick={exportExcel}
             >
               Export Excel
-            </button>
+            </button>}
           </div>
         </div>
         <div className="mb-3 flex flex-col sm:flex-row gap-3 items-center">

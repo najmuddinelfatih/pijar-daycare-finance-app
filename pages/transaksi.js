@@ -18,6 +18,7 @@ import {
 import { fetchAkunKas } from "../lib/apiAkunKas";
 import { fetchKategori } from "../lib/apiKategori";
 import Image from "next/image";
+import { hasAccess } from "../lib/akses";
 
 const DataTable = dynamic(() => import("react-data-table-component"), { ssr: false });
 
@@ -256,6 +257,13 @@ export default function Transaksi() {
     }
   }, [router, authChecked]);
 
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const u = localStorage.getItem("user");
+    if (u) setUser(JSON.parse(u));
+  }, []);
+
   // ===== FETCH DATA =====
   useEffect(() => {
     async function loadAll() {
@@ -282,6 +290,7 @@ export default function Transaksi() {
   if (!authChecked) {
     return <div className="min-h-screen flex items-center justify-center bg-gray-50">Loading...</div>;
   }
+    if (!user) return null;
 
   // Handler tambah
   async function handleTambah(e) {
@@ -484,24 +493,24 @@ const saldoBank = data
       cell: row => (
         <div className="flex gap-2 justify-center">
           {/* Tombol Edit */}
-          <button
+          {hasAccess(user.role, "edit") && <button
             className="text-blue-600 hover:underline"
             onClick={() => handleOpenEdit(row)}
             title="Edit"
           >
             <Edit size={16} />
-          </button>
+          </button>}
           {/* Tombol Hapus */}
-          <button
+          {hasAccess(user.role, "edit") && <button
             className="text-red-600 hover:underline"
             onClick={() => { setShowDeleteModal(true); setEditId(row.id); }}
             title="Hapus"
           >
             <Trash2 size={16} />
-          </button>
+          </button>}
           {/* Tombol Kwitansi: hanya jika Pemasukan */}
           {row.jenis === "Pemasukan" ? (
-            <button
+            hasAccess(user.role, "edit") && <button
               className="text-green-600 hover:underline"
               title="Download Kwitansi"
               onClick={() => handleDownloadKwitansi(row)}
@@ -509,7 +518,7 @@ const saldoBank = data
               <Receipt size={16} />
             </button>
           ) : (
-            <button
+            hasAccess(user.role, "edit") && <button
               className="text-gray-400 cursor-not-allowed"
               disabled
               title="Tidak ada Kwitansi"
@@ -542,7 +551,7 @@ const saldoBank = data
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
-      <Sidebar />
+      {/* <Sidebar /> */}
       <main className="flex-1 px-2 sm:px-6 py-6 max-w-9/10 mx-auto w-full">
         <div className="mb-6 flex flex-col sm:flex-row gap-4 justify-between items-center">
           <div>
@@ -556,12 +565,12 @@ const saldoBank = data
               </div>
             </div>
           </div>
-          <button
+          {hasAccess(user.role, "edit") && <button
             className="px-5 py-3 rounded-full bg-blue-500 text-white font-bold shadow-md hover:bg-blue-600 transition text-base"
             onClick={() => setShowAddModal(true)}
           >
             + Tambah Transaksi
-          </button>
+          </button>}
         </div>
         <div className="mb-3 flex flex-wrap gap-2 items-center">
           {/* Filter Kategori */}

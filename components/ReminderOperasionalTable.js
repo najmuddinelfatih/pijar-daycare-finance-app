@@ -7,6 +7,7 @@ import {
 import { Edit, Trash2, Plus, CheckCircle } from "lucide-react";
 import { format } from "date-fns";
 import { useRouter } from "next/router";
+import { hasAccess } from "../lib/akses";
 
 export default function ReminderOperasionalTable() {
   const router = useRouter();
@@ -18,6 +19,13 @@ export default function ReminderOperasionalTable() {
   // Bulan sekarang
   const now = new Date();
   const bulan_tahun = format(now, "yyyy-MM");
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const u = localStorage.getItem("user");
+    if (u) setUser(JSON.parse(u));
+  }, []);
 
   useEffect(() => { loadData(); }, [router]);
   async function loadData() {
@@ -64,14 +72,15 @@ export default function ReminderOperasionalTable() {
     await doneReminderOperasional(id);
     loadData();
   }
+  if (!user) return null;
 
   return (
     <div>
       <div className="mb-2 flex justify-between items-center">
         <h2 className="text-lg font-bold text-blue-600">Reminder Biaya Operasional Bulan Ini</h2>
-        <button className="px-4 py-2 rounded bg-blue-500 text-white flex items-center gap-1" onClick={handleTambah}>
+        {hasAccess(user.role, "edit") && <button className="px-4 py-2 rounded bg-blue-500 text-white flex items-center gap-1" onClick={handleTambah}>
           <Plus size={16}/> Tambah Reminder
-        </button>
+        </button>}
       </div>
       <table className="w-full bg-white rounded-xl text-xs shadow">
         <thead>
@@ -89,7 +98,7 @@ export default function ReminderOperasionalTable() {
             <tr key={r.id} className={r.sudah_bayar == 1 ? "text-gray-400 line-through" : ""}>
               <td className="text-center border-r">
                 {r.sudah_bayar == 0 ? (
-                    <button
+                    hasAccess(user.role, "edit") && <button
                     title="Tandai sudah bayar"
                     className="text-green-500"
                     onClick={() => handleDone(r.id)}
@@ -97,7 +106,7 @@ export default function ReminderOperasionalTable() {
                     <CheckCircle size={18}/>
                     </button>
                 ) : (
-                    <button
+                    hasAccess(user.role, "edit") && <button
                     title="Batalkan checklist"
                     className="text-gray-300 hover:text-orange-500"
                     onClick={() => handleUncheck(r.id)}
@@ -111,8 +120,8 @@ export default function ReminderOperasionalTable() {
               <td className="border-r text-center">{r.tanggal_rutin}</td>
               <td className="text-center border-r">{r.keterangan}</td>
               <td className="items-center justify-center flex gap-2">
-                <button className="text-blue-600" onClick={()=>handleEdit(r)}><Edit size={16}/></button>
-                <button className="text-red-600" onClick={()=>handleHapus(r.id)}><Trash2 size={16}/></button>
+                {hasAccess(user.role, "edit") && <button className="text-blue-600" onClick={()=>handleEdit(r)}><Edit size={16}/></button>}
+                {hasAccess(user.role, "edit") && <button className="text-red-600" onClick={()=>handleHapus(r.id)}><Trash2 size={16}/></button>}
               </td>
             </tr>
           )}
