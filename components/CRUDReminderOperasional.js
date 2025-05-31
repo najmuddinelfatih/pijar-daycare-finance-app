@@ -54,7 +54,7 @@ export default function CRUDReminderOperasional() {
           </tr>
         </thead>
         <tbody>
-          {list.map((r,_id) =>
+          {list.map((r) =>
             <tr key={r.id} className="border-t">
               <td className="py-1 px-2 border-r">{r.nama}</td>
               <td className="border-r">Rp. {Number(r.nominal).toLocaleString("id-ID")}</td>

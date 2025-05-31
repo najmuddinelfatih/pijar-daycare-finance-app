@@ -30,7 +30,7 @@ export default function PengaturanKategori() {
     setLoading(false);
   }
 
-  async function handleSubmit(e) {
+  async function handleSubmit() {
     preventDefault();
     try {
       if (editId) {

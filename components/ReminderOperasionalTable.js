@@ -19,7 +19,7 @@ export default function ReminderOperasionalTable() {
   const now = new Date();
   const bulan_tahun = format(now, "yyyy-MM");
 
-  useEffect(() => { loadData(); }, [router]);
+  // useEffect(() => { loadData(); }, [router]);
   async function loadData() {
     // Cek dan repeat data bulan sebelumnya jika kosong!
     const data = await fetchReminderOperasional(bulan_tahun);

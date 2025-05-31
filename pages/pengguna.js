@@ -36,7 +36,7 @@ export default function Pengguna() {
           setAuthChecked(true); // Sudah cek login, boleh render dashboard
         }
       }
-    }, []);
+    }, [router, authChecked]);
     // Fetch data
   useEffect(() => {
     loadUsers();
@@ -46,7 +46,7 @@ export default function Pengguna() {
     try {
       const data = await fetchUsers();
       setUsers(data);
-    } catch (e) { setErrorMsg("Gagal mengambil data user."); }
+    } catch { setErrorMsg("Gagal mengambil data user."); }
     setLoading(false);
   }
     if (!authChecked) {

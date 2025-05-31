@@ -3,7 +3,7 @@ import { fetchIdentitas, updateIdentitas } from "../lib/apiIdentitas"; // sesuai
 import Image from "next/image";
 
 export default function PengaturanIdentitas() {
-  const [identitas, setIdentitas] = useState({ nama: "", logo: "" });
+  const [, setIdentitas] = useState({ nama: "", logo: "" });
   const [loading, setLoading] = useState(true);
   const [formNama, setFormNama] = useState("");
   const [formLogo, setFormLogo] = useState(null);

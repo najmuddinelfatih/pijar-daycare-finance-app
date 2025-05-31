@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Sidebar from "../components/Sidebar";
 import { Eye, Bell, Settings, FileText, ShieldCheck, Save, HelpCircle, RefreshCcw, Paintbrush2 } from "lucide-react";

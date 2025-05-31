@@ -18,7 +18,7 @@ function formatTanggal(dt) {
 
 export default function Laporan() {
   const router = useRouter();
-  const [authChecked, setAuthChecked] = useState(false);
+  const authChecked = useState(false);
   const [tab, setTab] = useState("aruskas");
   const [transaksi, setTransaksi] = useState([]);
   const [filterStart, setFilterStart] = useState("");

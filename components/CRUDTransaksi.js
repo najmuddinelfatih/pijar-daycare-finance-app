@@ -49,7 +49,7 @@ export default function CRUDTransaksi() {
       setAkunKas(ak);
       setKategori(kg);
       setErrorMsg("");
-    } catch (e) {
+    } catch {
       setErrorMsg("Gagal mengambil data dari server.");
     }
     setLoading(false);
