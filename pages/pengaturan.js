@@ -63,7 +63,7 @@ export default function Pengaturan() {
         setAuthChecked(true); // Sudah cek login, boleh render dashboard
       }
     }
-  }, []);
+  }, [router]);
   if (!authChecked) {
     // Boleh return loader, skeleton, atau <></> (blank)
     return <div className="min-h-screen flex items-center justify-center bg-gray-50">Loading...</div>;
