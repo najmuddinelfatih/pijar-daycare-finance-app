@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Sidebar from "../components/Sidebar";
 import {
   fetchUsers, tambahUser, editUser, hapusUser,
   resetPassword, toggleStatus
@@ -120,7 +119,6 @@ export default function Pengguna() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
-      {/* <Sidebar/> */}
       <main className="flex-1 px-2 sm:px-6 py-6 max-w-9/10 mx-auto w-full">
         <h1 className="text-2xl font-bold text-blue-600 mb-4">Daftar Pengguna</h1>
         <div className="mb-4 flex flex-col sm:flex-row justify-between gap-2 items-start sm:items-center">

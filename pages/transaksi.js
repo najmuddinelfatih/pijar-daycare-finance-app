@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import Sidebar from "../components/Sidebar";
 import Modal from "../components/Modal";
 import dynamic from "next/dynamic";
 import {
@@ -551,7 +550,6 @@ const saldoBank = data
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
-      {/* <Sidebar /> */}
       <main className="flex-1 px-2 sm:px-6 py-6 max-w-9/10 mx-auto w-full">
         <div className="mb-6 flex flex-col sm:flex-row gap-4 justify-between items-center">
           <div>

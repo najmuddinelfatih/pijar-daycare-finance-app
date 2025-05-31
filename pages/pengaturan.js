@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Sidebar from "../components/Sidebar";
 import { Eye, Bell, Settings, FileText, ShieldCheck, Save, HelpCircle, RefreshCcw, Paintbrush2 } from "lucide-react";
 import PengaturanIdentitas from "../components/PengaturanIdentitas";
 import PengaturanAkunKas from "../components/PengaturanAkunKas";
@@ -122,7 +121,6 @@ export default function Pengaturan() {
   // UI Tab
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
-        {/* <Sidebar/> */}
       <main className="flex-1 px-2 sm:px-6 py-6 max-w-9/10 mx-auto w-full">
         <h1 className="text-xl font-bold text-blue-600 mb-5">Pengaturan Sistem</h1>
         <div className="flex gap-2 mb-6 flex-wrap">

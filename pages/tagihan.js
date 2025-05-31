@@ -283,7 +283,6 @@ export default function Tagihan() {
   // --- Render ---
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
-      {/* <Sidebar /> */}
       <main className="flex-1 px-2 sm:px-6 py-6 max-w-9/10 mx-auto w-full">
         {/* Header + Filter/Search */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">

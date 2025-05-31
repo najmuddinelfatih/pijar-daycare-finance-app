@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { fetchTransaksi } from "../lib/apiTransaksi";
-import Sidebar from "../components/Sidebar";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
@@ -160,7 +159,6 @@ export default function Laporan() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
-      {/* <Sidebar /> */}
       <main className="flex-1 px-2 sm:px-6 py-6 max-w-9/10 mx-auto w-full">
         <h1 className="text-2xl font-bold text-teal-700 mb-4">Laporan Keuangan</h1>
         <div className="flex gap-2 mb-6">
