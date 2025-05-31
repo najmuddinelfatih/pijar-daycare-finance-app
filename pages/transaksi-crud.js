@@ -32,6 +32,9 @@ export default function CRUDTransaksi() {
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const fileInputRef = useRef();
+  const [showModalBukti, setShowModalBukti] = useState(false);
+  const [previewBuktiUrl, setPreviewBuktiUrl] = useState("");
+
 
   useEffect(() => {
     loadAll();
@@ -194,7 +197,15 @@ export default function CRUDTransaksi() {
                     <td>{trx.metode}</td>
                     <td>
                       {trx.bukti ? (
-                        <a href={`https://pijarmontessoriislam.id/api/${trx.bukti}`} target="_blank" rel="noopener noreferrer" className="underline text-blue-600">Lihat</a>
+                        <button
+                          className="underline text-blue-600"
+                          onClick={() => {
+                            setPreviewBuktiUrl(`https://pijarmontessoriislam.id/api/${trx.bukti}`);
+                            setShowModalBukti(true);
+                          }}
+                        >
+                          Lihat
+                        </button>
                       ) : (
                         "-"
                       )}
@@ -351,6 +362,27 @@ export default function CRUDTransaksi() {
             </button>
           </div>
         </form>
+      )}
+      {showModalBukti && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-4 max-w-xl w-full relative">
+            <button
+              className="absolute top-2 right-3 text-gray-500 hover:text-gray-700 text-xl"
+              onClick={() => setShowModalBukti(false)}
+            >
+              &times;
+            </button>
+            {previewBuktiUrl.match(/\.(jpg|jpeg|png|gif)$/i) ? (
+              <img src={previewBuktiUrl} alt="Bukti" className="max-h-[70vh] mx-auto rounded" />
+            ) : (
+              <iframe
+                src={previewBuktiUrl}
+                title="Bukti Bayar"
+                className="w-full h-[70vh] rounded"
+              ></iframe>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

@@ -75,6 +75,9 @@ export default function Tagihan() {
   const fileRefAdd = useRef();
   const fileRefEdit = useRef();
   const [user, setUser] = useState(null);
+  const [showBuktiModal, setShowBuktiModal] = useState(false);
+  const [buktiPreviewUrl, setBuktiPreviewUrl] = useState("");
+
 
   useEffect(() => {
     const u = localStorage.getItem("user");
@@ -238,9 +241,15 @@ export default function Tagihan() {
       cell: row =>
         row.bukti_bayar
           ? (
-            <a href={`/${row.bukti_bayar}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline flex items-center gap-1">
-              <Paperclip size={16}/> Lihat
-            </a>
+            <button
+              onClick={() => {
+                setShowBuktiModal(true);
+                setBuktiPreviewUrl(`https://pijarmontessoriislam.id/api/${row.bukti_bayar}`);
+              }}
+              className="text-blue-600 underline flex items-center gap-1"
+            >
+              <Paperclip size={16} /> Lihat
+            </button>
           ) : "-",
       minWidth: "90px"
     },
@@ -633,6 +642,24 @@ export default function Tagihan() {
           </div>
         </Modal>
         <div className="h-12"></div>
+        <Modal show={showBuktiModal} onClose={() => setShowBuktiModal(false)} title="Lihat Bukti Pembayaran">
+          <div className="p-4 flex justify-center items-center min-h-[200px]">
+            {buktiPreviewUrl.endsWith(".pdf") ? (
+              <iframe
+                src={buktiPreviewUrl}
+                className="w-full h-[500px] border rounded"
+                title="Bukti Pembayaran PDF"
+              />
+            ) : (
+              <img
+                src={buktiPreviewUrl}
+                alt="Bukti Pembayaran"
+                className="max-h-[500px] w-auto rounded shadow"
+              />
+            )}
+          </div>
+        </Modal>
+
       </main>
     </div>
   );

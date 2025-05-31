@@ -156,6 +156,7 @@ function FormTransaksi({ form, akunKas, kategoriList, onChange, onJenisChange, o
         <label className="block mb-2 font-bold text-gray-700 text-sm sm:text-base">Bukti Transfer/Kwitansi/Nota</label>
         <input
           type="file"
+          name="bukti"
           accept="image/*,application/pdf"
           onChange={onUpload}
           className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
@@ -242,7 +243,7 @@ export default function Transaksi() {
   const [buktiUrl, setBuktiUrl] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
-
+  
   // Search/filter
   const [search, setSearch] = useState("");
   useEffect(() => {
@@ -477,7 +478,7 @@ const saldoBank = data
               className="text-blue-600 underline flex items-center gap-1"
               onClick={() => {
                 setShowBuktiModal(true);
-                setBuktiUrl(`/${row.bukti}`);
+                setBuktiUrl(`https://pijarmontessoriislam.id/api/${row.bukti}`);
               }}
             >
               <Eye size={16} /> Lihat
@@ -678,12 +679,40 @@ const saldoBank = data
         <Modal show={showBuktiModal} onClose={() => setShowBuktiModal(false)} title="Lihat Bukti">
           <div className="flex flex-col items-center gap-4 p-2">
             {buktiUrl && (
-              <Zoom>
-                <Image  src={`https://pijarmontessoriislam.id/api/${buktiUrl}`} alt="Bukti" className="max-h-[400px] w-auto rounded shadow" />
-              </Zoom>
+              buktiUrl.endsWith(".pdf") ? (
+                <iframe
+                  src={buktiUrl}
+                  className="w-full h-[500px] border rounded"
+                />
+              ) : (
+                <Zoom>
+                  <img
+                    src={buktiUrl}
+                    alt="Bukti Transfer"
+                    className="max-h-[400px] w-auto rounded shadow"
+                  />
+                </Zoom>
+              )
             )}
           </div>
         </Modal>
+        {/* <Modal show={showBuktiModal} onClose={() => setShowBuktiModal(false)} title="Lihat Bukti Transfer">
+          <div className="p-4 flex justify-center items-center max-h-[75vh] overflow-auto">
+            {buktiUrl.endsWith(".pdf") ? (
+              <iframe
+                src={buktiUrl}
+                title="Bukti PDF"
+                className="w-full h-[70vh] rounded-xl border"
+              />
+            ) : (
+              <img
+                src={buktiUrl}
+                alt="Bukti Transfer"
+                className="max-w-full max-h-[70vh] rounded-xl shadow"
+              />
+            )}
+          </div>
+        </Modal> */}
         {errorMsg && <div className="text-red-600 text-sm mt-4">{errorMsg}</div>}
         {successMsg && <div className="text-green-700 text-sm mt-4">{successMsg}</div>}
       </main>

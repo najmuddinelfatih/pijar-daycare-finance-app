@@ -10,25 +10,26 @@ $user = "u516826482_financeuser";
 $pass = "o&3Sxtf/aO7?";
 $dbname = "u516826482_financeapp";
 $conn = new mysqli($host, $user, $pass, $dbname);
-if ($conn->connect_error) die(json_encode(["error"=>"Koneksi gagal"]));
+if ($conn->connect_error) die(json_encode(["error" => "Koneksi gagal"]));
 
 $aksi = $_GET['aksi'] ?? 'list';
 
 if ($aksi == 'list') {
     $res = $conn->query(
-      "SELECT t.*, 
-        a.nama as akun_nama, 
-        k.nama as kategori_nama, 
-        k.jenis as kategori_jenis
-       FROM transaksi t 
-       LEFT JOIN akun_kas a ON t.akun_id=a.id
-       LEFT JOIN kategori k ON t.kategori_id=k.id
-       ORDER BY t.tanggal DESC, t.id DESC"
+        "SELECT t.*, 
+            a.nama as akun_nama, 
+            k.nama as kategori_nama, 
+            k.jenis as kategori_jenis
+        FROM transaksi t 
+        LEFT JOIN akun_kas a ON t.akun_id=a.id
+        LEFT JOIN kategori k ON t.kategori_id=k.id
+        ORDER BY t.tanggal DESC, t.id DESC"
     );
     $rows = [];
     while ($row = $res->fetch_assoc()) $rows[] = $row;
     echo json_encode($rows);
 }
+
 else if ($aksi == 'tambah') {
     $tanggal = $_POST['tanggal'] ?? '';
     $akun_id = $_POST['akun_id'] ?? 0;
@@ -39,15 +40,20 @@ else if ($aksi == 'tambah') {
     $metode = $_POST['metode'] ?? '';
     $referensi = $_POST['referensi'] ?? '';
     $bukti = '';
+
     if (isset($_FILES['bukti']) && $_FILES['bukti']['tmp_name']) {
-        $bukti = 'uploads/' . basename($_FILES['bukti']['name']);
-        move_uploaded_file($_FILES['bukti']['tmp_name'], $bukti);
+    $ext = pathinfo($_FILES['bukti']['name'], PATHINFO_EXTENSION);
+    $bukti = "uploads/bukti_" . time() . "_" . rand(1000,9999) . "." . $ext;
+    move_uploaded_file($_FILES['bukti']['tmp_name'], $bukti);
     }
+
     $q = $conn->prepare("INSERT INTO transaksi (tanggal, akun_id, kategori_id, deskripsi, jumlah, jenis, metode, referensi, bukti) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $q->bind_param("siissssss", $tanggal, $akun_id, $kategori_id, $deskripsi, $jumlah, $jenis, $metode, $referensi, $bukti);
+
     $ok = $q->execute();
-    echo json_encode(["success"=>$ok]);
+    echo json_encode(["success" => $ok]);
 }
+
 else if ($aksi == 'edit') {
     $id = $_POST['id'] ?? 0;
     $tanggal = $_POST['tanggal'] ?? '';
@@ -59,10 +65,13 @@ else if ($aksi == 'edit') {
     $metode = $_POST['metode'] ?? '';
     $referensi = $_POST['referensi'] ?? '';
     $bukti = '';
+
     if (isset($_FILES['bukti']) && $_FILES['bukti']['tmp_name']) {
-        $bukti = 'uploads/' . basename($_FILES['bukti']['name']);
-        move_uploaded_file($_FILES['bukti']['tmp_name'], $bukti);
+    $ext = pathinfo($_FILES['bukti']['name'], PATHINFO_EXTENSION);
+    $bukti = "uploads/bukti_" . time() . "_" . rand(1000,9999) . "." . $ext;
+    move_uploaded_file($_FILES['bukti']['tmp_name'], $bukti);
     }
+
     if ($bukti) {
       $q = $conn->prepare("UPDATE transaksi SET tanggal=?, akun_id=?, kategori_id=?, deskripsi=?, jumlah=?, jenis=?, metode=?, referensi=?, bukti=? WHERE id=?");
       $q->bind_param("siissssssi", $tanggal, $akun_id, $kategori_id, $deskripsi, $jumlah, $jenis, $metode, $referensi, $bukti, $id);
@@ -71,16 +80,18 @@ else if ($aksi == 'edit') {
       $q->bind_param("siisssssi", $tanggal, $akun_id, $kategori_id, $deskripsi, $jumlah, $jenis, $metode, $referensi, $id);
     }
     $ok = $q->execute();
-    echo json_encode(["success"=>$ok]);
+    echo json_encode(["success" => $ok]);
 }
+
 else if ($aksi == 'hapus') {
     $id = $_POST['id'] ?? 0;
     $q = $conn->prepare("DELETE FROM transaksi WHERE id=?");
     $q->bind_param("i", $id);
     $ok = $q->execute();
-    echo json_encode(["success"=>$ok]);
+    echo json_encode(["success" => $ok]);
 }
+
 else {
-    echo json_encode(["error"=>"Aksi tidak dikenali"]);
+    echo json_encode(["error" => "Aksi tidak dikenali"]);
 }
 ?>
