@@ -16,7 +16,7 @@ import {
 } from "../lib/apiTransaksi";
 import { fetchAkunKas } from "../lib/apiAkunKas";
 import { fetchKategori } from "../lib/apiKategori";
-import Image from "next/image";
+// import Image from "next/image";
 import { hasAccess } from "../lib/akses";
 
 const DataTable = dynamic(() => import("react-data-table-component"), { ssr: false });

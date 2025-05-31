@@ -33,7 +33,7 @@ export default function App({ Component, pageProps }) {
   if (allowedRoles && !allowedRoles.includes(u.role)) {
     router.replace("/"); // redirect ke beranda
   }
-  }, [router.pathname]);
+  }, [router.pathname, router]);
 
 
   if (!hydrated) return null;

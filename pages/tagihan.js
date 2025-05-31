@@ -658,7 +658,7 @@ export default function Tagihan() {
               />
             )}
           </div>
-        </Modal>
+          </Modal>
 
       </main>
     </div>
