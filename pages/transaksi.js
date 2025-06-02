@@ -8,6 +8,7 @@ import {
 import jsPDF from "jspdf";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
+import Image from "next/image";
 import {
   fetchTransaksi,
   tambahTransaksi,
@@ -16,8 +17,10 @@ import {
 } from "../lib/apiTransaksi";
 import { fetchAkunKas } from "../lib/apiAkunKas";
 import { fetchKategori } from "../lib/apiKategori";
-// import Image from "next/image";
 import { hasAccess } from "../lib/akses";
+import imageCompression from 'browser-image-compression';
+
+
 
 const DataTable = dynamic(() => import("react-data-table-component"), { ssr: false });
 
@@ -336,14 +339,44 @@ export default function Transaksi() {
   }
   // Handler edit
   async function handleEdit(e) {
-    e.preventDefault();
-    setErrorMsg(""); setSuccessMsg("");
-    try {
-      const resp = await editTransaksi({ ...editForm, id: editId });
+  e.preventDefault();
+  setErrorMsg("");
+  setSuccessMsg("");
+
+  try {
+    let buktiCompressed = null;
+
+      // Jika user upload file baru, kompres dulu
+      if (editForm.bukti instanceof File) {
+        console.log("🔧 Mulai kompres edit...");
+        const options = {
+          maxSizeMB: 0.5,
+          maxWidthOrHeight: 1280,
+          useWebWorker: true,
+        };
+        const compressedBlob = await imageCompression(editForm.bukti, options);
+        buktiCompressed = new File([compressedBlob], editForm.bukti.name, {
+          type: editForm.bukti.type,
+          lastModified: Date.now(),
+        });
+        console.log("✅ Kompres edit berhasil:", buktiCompressed);
+      }
+
+      // Buat payload lengkap untuk FormData
+      const payload = {
+        ...editForm,
+        id: editId,
+        bukti: buktiCompressed || null,
+        bukti_bayar_old: editForm.bukti_bayar_old || "",
+      };
+
+      const resp = await editTransaksi(payload);
       if (!resp.success) throw new Error("Gagal edit");
+
       setSuccessMsg("Transaksi berhasil diubah!");
       setShowEditModal(false);
       setEditId(null);
+
       const dt = await fetchTransaksi();
       setData(dt);
     } catch (e) {
@@ -366,20 +399,63 @@ export default function Transaksi() {
   }
 
   // Handler file input
-  function handleAddChange(e) {
-    const { name, value, type, files } = e.target;
+  async function handleAddChange(e) {
+  const { name, value, type, files } = e.target;
+
     if (type === "file") {
-      setAddForm(f => ({ ...f, [name]: files[0] }));
+      const file = files[0];
+      if (!file) return;
+
+      // Kompres file gambar
+      const options = {
+        maxSizeMB: 0.5,
+        maxWidthOrHeight: 1200,
+        useWebWorker: true,
+      };
+
+      try {
+        const compressedBlob = await imageCompression(file, options);
+        const compressedFile = new File([compressedBlob], file.name, {
+          type: file.type,
+          lastModified: Date.now(),
+        });
+
+        setAddForm(prev => ({ ...prev, [name]: compressedFile }));
+      } catch (err) {
+        console.error("Gagal kompres gambar:", err);
+      }
     } else {
-      setAddForm(f => ({ ...f, [name]: value }));
+      setAddForm(prev => ({ ...prev, [name]: value }));
     }
   }
-  function handleEditChange(e) {
+  
+  async function handleEditChange(e) {
     const { name, value, type, files } = e.target;
+
     if (type === "file") {
-      setEditForm(f => ({ ...f, [name]: files[0] }));
+      const file = files[0];
+      if (!file) return;
+
+      const options = {
+        maxSizeMB: 0.5,
+        maxWidthOrHeight: 1200,
+        useWebWorker: true,
+      };
+
+      try {
+        const compressedBlob = await imageCompression(file, options);
+        const compressedFile = new File([compressedBlob], file.name, {
+          type: file.type,
+          lastModified: Date.now(),
+        });
+
+        setEditForm(prev => ({ ...prev, [name]: compressedFile }));
+        console.log("✅ Kompres edit berhasil:", compressedFile);
+      } catch (err) {
+        console.error("❌ Gagal kompres (EDIT):", err);
+      }
     } else {
-      setEditForm(f => ({ ...f, [name]: value }));
+      setEditForm(prev => ({ ...prev, [name]: value }));
     }
   }
   function handleJenisChange(e) {
@@ -677,6 +753,30 @@ const saldoBank = data
         </Modal>
         {/* Modal Bukti */}
         <Modal show={showBuktiModal} onClose={() => setShowBuktiModal(false)} title="Lihat Bukti">
+          <div className="flex flex-col items-center gap-4 p-4">
+            {!buktiUrl ? (
+              <div className="text-gray-500 italic">Tidak ada bukti yang bisa ditampilkan</div>
+            ) : buktiUrl.endsWith(".pdf") ? (
+              <iframe
+                key={buktiUrl}
+                src={buktiUrl}
+                title="Bukti PDF"
+                className="w-full max-w-4xl h-[500px] border rounded-md shadow"
+              />
+            ) : (
+              <Zoom>
+                <Image
+                  src={buktiUrl}
+                  alt="Bukti Transfer"
+                  width={600}
+                  height={400}
+                  className="rounded-lg shadow max-w-full h-auto"
+                />
+              </Zoom>
+            )}
+          </div>
+        </Modal>
+        {/* <Modal show={showBuktiModal} onClose={() => setShowBuktiModal(false)} title="Lihat Bukti">
           <div className="flex flex-col items-center gap-4 p-2">
             {buktiUrl && (
               buktiUrl.endsWith(".pdf") ? (
@@ -693,23 +793,6 @@ const saldoBank = data
                   />
                 </Zoom>
               )
-            )}
-          </div>
-        </Modal>
-        {/* <Modal show={showBuktiModal} onClose={() => setShowBuktiModal(false)} title="Lihat Bukti Transfer">
-          <div className="p-4 flex justify-center items-center max-h-[75vh] overflow-auto">
-            {buktiUrl.endsWith(".pdf") ? (
-              <iframe
-                src={buktiUrl}
-                title="Bukti PDF"
-                className="w-full h-[70vh] rounded-xl border"
-              />
-            ) : (
-              <img
-                src={buktiUrl}
-                alt="Bukti Transfer"
-                className="max-w-full max-h-[70vh] rounded-xl shadow"
-              />
             )}
           </div>
         </Modal> */}

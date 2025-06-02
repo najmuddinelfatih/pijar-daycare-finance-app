@@ -7,6 +7,9 @@ import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { Paperclip, CheckCircle, XCircle, Send } from "lucide-react";
 import { hasAccess } from "../lib/akses";
+import Image from "next/image";
+import Zoom from "react-medium-image-zoom";
+import "react-medium-image-zoom/dist/styles.css";
 
 const DataTable = dynamic(() => import("react-data-table-component"), { ssr: false });
 
@@ -646,20 +649,24 @@ export default function Tagihan() {
           <div className="p-4 flex justify-center items-center min-h-[200px]">
             {buktiPreviewUrl.endsWith(".pdf") ? (
               <iframe
+                key={buktiPreviewUrl}
                 src={buktiPreviewUrl}
                 className="w-full h-[500px] border rounded"
                 title="Bukti Pembayaran PDF"
               />
             ) : (
-              <img
-                src={buktiPreviewUrl}
-                alt="Bukti Pembayaran"
-                className="max-h-[500px] w-auto rounded shadow"
-              />
+              <Zoom>
+                <Image
+                  src={buktiPreviewUrl}
+                  alt="Bukti Pembayaran"
+                  width={600}
+                  height={400}
+                  className="rounded shadow max-w-full h-auto"
+                />
+              </Zoom>
             )}
           </div>
-          </Modal>
-
+        </Modal>
       </main>
     </div>
   );

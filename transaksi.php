@@ -64,21 +64,20 @@ else if ($aksi == 'edit') {
     $jenis = $_POST['jenis'] ?? '';
     $metode = $_POST['metode'] ?? '';
     $referensi = $_POST['referensi'] ?? '';
-    $bukti = '';
+    $bukti_lama = $_POST['bukti_bayar_old'] ?? '';
+    $bukti_baru = '';
 
     if (isset($_FILES['bukti']) && $_FILES['bukti']['tmp_name']) {
-    $ext = pathinfo($_FILES['bukti']['name'], PATHINFO_EXTENSION);
-    $bukti = "uploads/bukti_" . time() . "_" . rand(1000,9999) . "." . $ext;
-    move_uploaded_file($_FILES['bukti']['tmp_name'], $bukti);
+        $ext = pathinfo($_FILES['bukti']['name'], PATHINFO_EXTENSION);
+        $bukti_baru = "uploads/bukti_" . time() . "_" . rand(1000,9999) . "." . $ext;
+        move_uploaded_file($_FILES['bukti']['tmp_name'], $bukti_baru);
     }
 
-    if ($bukti) {
-      $q = $conn->prepare("UPDATE transaksi SET tanggal=?, akun_id=?, kategori_id=?, deskripsi=?, jumlah=?, jenis=?, metode=?, referensi=?, bukti=? WHERE id=?");
-      $q->bind_param("siissssssi", $tanggal, $akun_id, $kategori_id, $deskripsi, $jumlah, $jenis, $metode, $referensi, $bukti, $id);
-    } else {
-      $q = $conn->prepare("UPDATE transaksi SET tanggal=?, akun_id=?, kategori_id=?, deskripsi=?, jumlah=?, jenis=?, metode=?, referensi=? WHERE id=?");
-      $q->bind_param("siisssssi", $tanggal, $akun_id, $kategori_id, $deskripsi, $jumlah, $jenis, $metode, $referensi, $id);
-    }
+    $bukti_final = $bukti_baru ? $bukti_baru : $bukti_lama;
+
+    $q = $conn->prepare("UPDATE transaksi SET tanggal=?, akun_id=?, kategori_id=?, deskripsi=?, jumlah=?, jenis=?, metode=?, referensi=?, bukti=? WHERE id=?");
+    $q->bind_param("siisssssssi", $tanggal, $akun_id, $kategori_id, $deskripsi, $jumlah, $jenis, $metode, $referensi, $bukti_final, $id);
+
     $ok = $q->execute();
     echo json_encode(["success" => $ok]);
 }
