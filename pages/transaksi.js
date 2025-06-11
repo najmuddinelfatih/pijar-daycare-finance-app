@@ -323,32 +323,39 @@ export default function Transaksi() {
   }
   // Handler open edit
   function handleOpenEdit(trx) {
-    setEditForm({
-      tanggal: trx.tanggal?.slice(0, 16),
-      referensi: trx.referensi || "",
-      akun_id: trx.akun_id,
-      kategori_id: trx.kategori_id,
-      jenis: trx.jenis,
-      metode: trx.metode,
-      deskripsi: trx.deskripsi,
-      jumlah: Math.abs(trx.jumlah),
-      bukti: null,
-    });
-    setEditId(trx.id);
-    setShowEditModal(true);
+  setEditForm({
+    tanggal: trx.tanggal?.slice(0, 16),
+    referensi: trx.referensi || "",
+    akun_id: trx.akun_id,
+    kategori_id: trx.kategori_id,
+    jenis: trx.jenis,
+    metode: trx.metode,
+    deskripsi: trx.deskripsi,
+    jumlah: Math.abs(trx.jumlah),
+    bukti: null, // <- reset file input
+    bukti_old: trx.bukti || "", // <- simpan filename lama
+  });
+  setEditId(trx.id);
+  setShowEditModal(true);
+  }
+  function handleFileEdit(e) {
+  const file = e.target.files[0];
+  setEditForm(prev => ({
+    ...prev,
+    bukti: file || null, // Kalau user upload baru, simpan; kalau tidak, tetap null
+  }));
   }
   // Handler edit
   async function handleEdit(e) {
   e.preventDefault();
   setErrorMsg("");
   setSuccessMsg("");
-
   try {
     let buktiCompressed = null;
 
-      // Jika user upload file baru, kompres dulu
-      if (editForm.bukti instanceof File) {
-        console.log("🔧 Mulai kompres edit...");
+    // Jika user upload file baru (di-editForm.bukti), kompres jika image
+    if (editForm.bukti instanceof File) {
+      if (editForm.bukti.type && editForm.bukti.type.startsWith("image/")) {
         const options = {
           maxSizeMB: 0.5,
           maxWidthOrHeight: 1280,
@@ -359,30 +366,31 @@ export default function Transaksi() {
           type: editForm.bukti.type,
           lastModified: Date.now(),
         });
-        console.log("✅ Kompres edit berhasil:", buktiCompressed);
+      } else {
+        // PDF, tidak perlu kompres
+        buktiCompressed = editForm.bukti;
       }
-
-      // Buat payload lengkap untuk FormData
-      const payload = {
-        ...editForm,
-        id: editId,
-        bukti: buktiCompressed || null,
-        bukti_bayar_old: editForm.bukti_bayar_old || "",
-      };
-
-      const resp = await editTransaksi(payload);
-      if (!resp.success) throw new Error("Gagal edit");
-
-      setSuccessMsg("Transaksi berhasil diubah!");
-      setShowEditModal(false);
-      setEditId(null);
-
-      const dt = await fetchTransaksi();
-      setData(dt);
-    } catch (e) {
-      setErrorMsg("Gagal edit transaksi. " + e.message);
     }
+
+    // Payload dikirim ke API
+    const payload = {
+      ...editForm,
+      id: editId,
+      bukti: buktiCompressed || null,
+      bukti_old: editForm.bukti_old || "",
+    };
+
+    const resp = await editTransaksi(payload);
+    if (!resp.success) throw new Error("Gagal edit");
+    setSuccessMsg("Transaksi berhasil diubah!");
+    setShowEditModal(false);
+    setEditId(null);
+    const dt = await fetchTransaksi();
+    setData(dt);
+  } catch (e) {
+    setErrorMsg("Gagal edit transaksi. " + e.message);
   }
+}
   // Handler delete
   async function handleDeleteConfirm() {
     try {
@@ -430,29 +438,30 @@ export default function Transaksi() {
   }
   
   async function handleEditChange(e) {
-    const { name, value, type, files } = e.target;
+  const { name, value, type, files } = e.target;
 
     if (type === "file") {
       const file = files[0];
       if (!file) return;
-
-      const options = {
-        maxSizeMB: 0.5,
-        maxWidthOrHeight: 1200,
-        useWebWorker: true,
-      };
-
-      try {
-        const compressedBlob = await imageCompression(file, options);
-        const compressedFile = new File([compressedBlob], file.name, {
-          type: file.type,
-          lastModified: Date.now(),
-        });
-
-        setEditForm(prev => ({ ...prev, [name]: compressedFile }));
-        console.log("✅ Kompres edit berhasil:", compressedFile);
-      } catch (err) {
-        console.error("❌ Gagal kompres (EDIT):", err);
+      // Kompres jika gambar, langsung pakai jika PDF
+      if (file.type.startsWith("image/")) {
+        const options = {
+          maxSizeMB: 0.5,
+          maxWidthOrHeight: 1280,
+          useWebWorker: true,
+        };
+        try {
+          const compressedBlob = await imageCompression(file, options);
+          const compressedFile = new File([compressedBlob], file.name, {
+            type: file.type,
+            lastModified: Date.now(),
+          });
+          setEditForm(prev => ({ ...prev, [name]: compressedFile }));
+        } catch (err) {
+          console.error("❌ Gagal kompres gambar:", err);
+        }
+      } else {
+        setEditForm(prev => ({ ...prev, [name]: file }));
       }
     } else {
       setEditForm(prev => ({ ...prev, [name]: value }));
@@ -721,20 +730,210 @@ const saldoBank = data
         </Modal>
         {/* Modal Edit */}
         <Modal show={showEditModal} onClose={() => setShowEditModal(false)} title="Edit Transaksi">
-          <FormTransaksi
-            form={editForm}
-            akunKas={akunKas}
-            kategoriList={kategoriList}
-            onChange={handleEditChange}
-            onJenisChange={handleJenisEditChange}
-            onAkunChange={handleAkunEditChange}
-            onKategoriChange={handleKategoriEditChange}
-            onUpload={handleEditChange}
-            onSubmit={handleEdit}
-            onDelete={() => { setShowEditModal(false); setShowDeleteModal(true); }}
-            isEdit
-          />
-        </Modal>
+        <form
+          className="flex flex-col gap-4"
+          onSubmit={async (handleEdit) => {
+            e.preventDefault();
+            setErrorMsg("");
+            setSuccessMsg("");
+            try {
+              const formData = new FormData();
+              formData.append("id", editId);
+              formData.append("tanggal", editForm.tanggal || "");
+              formData.append("referensi", editForm.referensi || "");
+              formData.append("akun_id", editForm.akun_id || "");
+              formData.append("kategori_id", editForm.kategori_id || "");
+              formData.append("jenis", editForm.jenis || "");
+              formData.append("metode", editForm.metode || "");
+              formData.append("deskripsi", editForm.deskripsi || "");
+              formData.append("jumlah", editForm.jumlah || "");
+              // Bukti baru jika ada, jika tidak tetap kirim yang lama
+              if (editForm.bukti instanceof File) {
+                formData.append("bukti", editForm.bukti);
+              }
+              formData.append("bukti_old", editForm.bukti_old || "");
+              // Kirim ke API, pastikan editTransaksi menerima FormData!
+              const resp = await editTransaksi(formData);
+              if (!resp.success) throw new Error("Gagal edit");
+              setSuccessMsg("Transaksi berhasil diubah!");
+              setShowEditModal(false);
+              setEditId(null);
+              const dt = await fetchTransaksi();
+              setData(dt);
+            } catch {
+              setErrorMsg("Gagal edit transaksi. " + e.message);
+            }
+          }}
+        >
+          {/* Tanggal & Waktu */}
+          
+          <div>
+            <label className="block mb-1 font-bold text-gray-700 text-sm sm:text-base">Tanggal & Waktu</label>
+            <input
+              type="datetime-local"
+              name="tanggal"
+              required
+              value={editForm.tanggal}
+              onChange={e => setEditForm(f => ({ ...f, tanggal: e.target.value }))}
+              className="w-full rounded-2xl border-2 border-blue-200 focus:border-blue-500 outline-none px-4 py-3 bg-blue-50"
+            />
+          </div>
+          {/* Akun */}
+          <div>
+            <label className="block mb-1 font-bold text-gray-700 text-sm sm:text-base">Akun Kas/Bank</label>
+            <select
+              name="akun_id"
+              required
+              value={editForm.akun_id}
+              onChange={e => setEditForm(f => ({ ...f, akun_id: e.target.value }))}
+              className="w-full rounded-2xl border-2 border-blue-200 focus:border-blue-500 outline-none px-4 py-3 bg-blue-50"
+            >
+              <option value="">Pilih Akun</option>
+              {akunKas.map(a => (
+                <option key={a.id} value={a.id}>{a.nama}</option>
+              ))}
+            </select>
+          </div>
+          {/* Kategori */}
+          <div>
+            <label className="block mb-1 font-bold text-gray-700 text-sm sm:text-base">Kategori</label>
+            <select
+              name="kategori_id"
+              required
+              value={editForm.kategori_id}
+              onChange={e => setEditForm(f => ({ ...f, kategori_id: e.target.value }))}
+              className="w-full rounded-2xl border-2 border-blue-200 focus:border-blue-500 outline-none px-4 py-3 bg-blue-50"
+            >
+              <option value="">Pilih Kategori</option>
+              {kategoriList.map(k => (
+                <option key={k.id} value={k.id}>{k.nama} ({k.jenis})</option>
+              ))}
+            </select>
+          </div>
+          {/* Jenis */}
+          <div>
+            <label className="block mb-1 font-bold text-gray-700 text-sm sm:text-base">Jenis</label>
+            <select
+              name="jenis"
+              required
+              value={editForm.jenis}
+              onChange={e => setEditForm(f => ({ ...f, jenis: e.target.value }))}
+              className="w-full rounded-2xl border-2 border-blue-200 focus:border-blue-500 outline-none px-4 py-3 bg-blue-50"
+            >
+              <option value="Pemasukan">Pemasukan</option>
+              <option value="Pengeluaran">Pengeluaran</option>
+            </select>
+          </div>
+          {/* Metode */}
+          <div>
+            <label className="block mb-1 font-bold text-gray-700 text-sm sm:text-base">Metode</label>
+            <select
+              name="metode"
+              required
+              value={editForm.metode}
+              onChange={e => setEditForm(f => ({ ...f, metode: e.target.value }))}
+              className="w-full rounded-2xl border-2 border-blue-200 focus:border-blue-500 outline-none px-4 py-3 bg-blue-50"
+            >
+              <option value="Cash">Cash</option>
+              <option value="Transfer">Transfer</option>
+            </select>
+          </div>
+          {/* No Referensi */}
+          <div>
+            <label className="block mb-1 font-bold text-gray-700 text-sm sm:text-base">No Referensi (opsional)</label>
+            <input
+              type="text"
+              name="referensi"
+              value={editForm.referensi}
+              onChange={e => setEditForm(f => ({ ...f, referensi: e.target.value }))}
+              className="w-full rounded-2xl border-2 border-blue-200 focus:border-blue-500 outline-none px-4 py-3 bg-blue-50"
+            />
+          </div>
+          {/* Deskripsi */}
+          <div>
+            <label className="block mb-1 font-bold text-gray-700 text-sm sm:text-base">Deskripsi</label>
+            <input
+              type="text"
+              name="deskripsi"
+              required
+              value={editForm.deskripsi}
+              onChange={e => setEditForm(f => ({ ...f, deskripsi: e.target.value }))}
+              className="w-full rounded-2xl border-2 border-blue-200 focus:border-blue-500 outline-none px-4 py-3 bg-blue-50"
+            />
+          </div>
+          {/* Jumlah */}
+          <div>
+            <label className="block mb-1 font-bold text-gray-700 text-sm sm:text-base">Jumlah</label>
+            <input
+              type="number"
+              name="jumlah"
+              required
+              value={editForm.jumlah}
+              onChange={e => setEditForm(f => ({ ...f, jumlah: e.target.value }))}
+              className="w-full rounded-2xl border-2 border-blue-200 focus:border-blue-500 outline-none px-4 py-3 bg-blue-50"
+            />
+          </div>
+          {/* Upload Bukti */}
+          <div>
+            <label className="block mb-1 font-bold text-gray-700 text-sm sm:text-base">Bukti Transfer/Kwitansi/Nota</label>
+            <input
+              type="file"
+              name="bukti"
+              accept="image/*,application/pdf"
+              onChange={e => {
+                const file = e.target.files[0];
+                setEditForm(f => ({
+                  ...f,
+                  bukti: file || null,
+                }));
+              }}
+              className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
+            {editForm.bukti_old && (
+              <a
+                href={`https://pijarmontessoriislam.id/api/${editForm.bukti_old}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block mt-2 text-blue-600 underline"
+              >
+                Lihat Bukti Saat Ini
+              </a>
+            )}
+            {editForm.bukti && (
+              <div className="mt-2 text-xs text-blue-500 font-mono">{editForm.bukti.name}</div>
+            )}
+            <div className="text-xs text-gray-500 mt-1">* Upload file baru jika ingin ganti bukti. Kosongkan jika tidak ganti.</div>
+          </div>
+          <div className="flex gap-2 mt-3">
+            <button
+              type="submit"
+              className="flex-1 py-2 rounded-xl bg-blue-500 text-white font-bold"
+            >
+              Simpan
+            </button>
+            <button
+              type="button"
+              className="flex-1 py-2 rounded-xl bg-gray-200"
+              onClick={() => setShowEditModal(false)}
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              className="flex-1 py-2 rounded-xl bg-red-500 text-white font-bold"
+              onClick={() => {
+                setShowEditModal(false);
+                setShowDeleteModal(true);
+                setEditId(editId);
+              }}
+            >
+              Hapus
+            </button>
+          </div>
+          {errorMsg && <div className="text-red-600 text-sm mt-2">{errorMsg}</div>}
+          {successMsg && <div className="text-green-700 text-sm mt-2">{successMsg}</div>}
+        </form>
+      </Modal>
         {/* Modal Delete */}
         <Modal show={showDeleteModal} onClose={() => setShowDeleteModal(false)} title="Konfirmasi Hapus">
           <div className="text-center mb-6 text-gray-700 text-lg font-semibold">

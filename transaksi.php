@@ -28,9 +28,7 @@ if ($aksi == 'list') {
     $rows = [];
     while ($row = $res->fetch_assoc()) $rows[] = $row;
     echo json_encode($rows);
-}
-
-else if ($aksi == 'tambah') {
+} else if ($aksi == 'tambah') {
     $tanggal = $_POST['tanggal'] ?? '';
     $akun_id = $_POST['akun_id'] ?? 0;
     $kategori_id = $_POST['kategori_id'] ?? 0;
@@ -52,9 +50,7 @@ else if ($aksi == 'tambah') {
 
     $ok = $q->execute();
     echo json_encode(["success" => $ok]);
-}
-
-else if ($aksi == 'edit') {
+} else if ($aksi == 'edit') {
     $id = $_POST['id'] ?? 0;
     $tanggal = $_POST['tanggal'] ?? '';
     $akun_id = $_POST['akun_id'] ?? 0;
@@ -64,7 +60,10 @@ else if ($aksi == 'edit') {
     $jenis = $_POST['jenis'] ?? '';
     $metode = $_POST['metode'] ?? '';
     $referensi = $_POST['referensi'] ?? '';
-    $bukti_lama = $_POST['bukti_bayar_old'] ?? '';
+
+
+
+    $bukti_lama = $_POST['bukti_old'] ?? '';  // <= pastikan match frontend!
     $bukti_baru = '';
 
     if (isset($_FILES['bukti']) && $_FILES['bukti']['tmp_name']) {
@@ -79,18 +78,16 @@ else if ($aksi == 'edit') {
     $q->bind_param("siisssssssi", $tanggal, $akun_id, $kategori_id, $deskripsi, $jumlah, $jenis, $metode, $referensi, $bukti_final, $id);
 
     $ok = $q->execute();
-    echo json_encode(["success" => $ok]);
-}
 
-else if ($aksi == 'hapus') {
+    // Optional: debug log
+    file_put_contents("debug.log", "Edit response: " . json_encode(["success" => $ok]) . "\n", FILE_APPEND);
+    echo json_encode(["success" => $ok]);
+} else if ($aksi == 'hapus') {
     $id = $_POST['id'] ?? 0;
     $q = $conn->prepare("DELETE FROM transaksi WHERE id=?");
     $q->bind_param("i", $id);
     $ok = $q->execute();
     echo json_encode(["success" => $ok]);
-}
-
-else {
+} else {
     echo json_encode(["error" => "Aksi tidak dikenali"]);
-}
-?>
+}?>
