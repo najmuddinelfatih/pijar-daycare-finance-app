@@ -338,13 +338,6 @@ export default function Transaksi() {
   setEditId(trx.id);
   setShowEditModal(true);
   }
-  function handleFileEdit(e) {
-  const file = e.target.files[0];
-  setEditForm(prev => ({
-    ...prev,
-    bukti: file || null, // Kalau user upload baru, simpan; kalau tidak, tetap null
-  }));
-  }
   // Handler edit
   async function handleEdit(e) {
   e.preventDefault();
@@ -437,53 +430,15 @@ export default function Transaksi() {
     }
   }
   
-  async function handleEditChange(e) {
-  const { name, value, type, files } = e.target;
-
-    if (type === "file") {
-      const file = files[0];
-      if (!file) return;
-      // Kompres jika gambar, langsung pakai jika PDF
-      if (file.type.startsWith("image/")) {
-        const options = {
-          maxSizeMB: 0.5,
-          maxWidthOrHeight: 1280,
-          useWebWorker: true,
-        };
-        try {
-          const compressedBlob = await imageCompression(file, options);
-          const compressedFile = new File([compressedBlob], file.name, {
-            type: file.type,
-            lastModified: Date.now(),
-          });
-          setEditForm(prev => ({ ...prev, [name]: compressedFile }));
-        } catch (err) {
-          console.error("❌ Gagal kompres gambar:", err);
-        }
-      } else {
-        setEditForm(prev => ({ ...prev, [name]: file }));
-      }
-    } else {
-      setEditForm(prev => ({ ...prev, [name]: value }));
-    }
-  }
   function handleJenisChange(e) {
     setAddForm(f => ({ ...f, jenis: e.target.value }));
-  }
-  function handleJenisEditChange(e) {
-    setEditForm(f => ({ ...f, jenis: e.target.value }));
   }
   function handleAkunChange(e) {
     setAddForm(f => ({ ...f, akun_id: e.target.value }));
   }
-  function handleAkunEditChange(e) {
-    setEditForm(f => ({ ...f, akun_id: e.target.value }));
-  }
+
   function handleKategoriChange(e) {
     setAddForm(f => ({ ...f, kategori_id: e.target.value }));
-  }
-  function handleKategoriEditChange(e) {
-    setEditForm(f => ({ ...f, kategori_id: e.target.value }));
   }
 
   // ===== Filtered data logic =====
@@ -732,39 +687,7 @@ const saldoBank = data
         <Modal show={showEditModal} onClose={() => setShowEditModal(false)} title="Edit Transaksi">
         <form
           className="flex flex-col gap-4"
-          onSubmit={async (handleEdit) => {
-            e.preventDefault();
-            setErrorMsg("");
-            setSuccessMsg("");
-            try {
-              const formData = new FormData();
-              formData.append("id", editId);
-              formData.append("tanggal", editForm.tanggal || "");
-              formData.append("referensi", editForm.referensi || "");
-              formData.append("akun_id", editForm.akun_id || "");
-              formData.append("kategori_id", editForm.kategori_id || "");
-              formData.append("jenis", editForm.jenis || "");
-              formData.append("metode", editForm.metode || "");
-              formData.append("deskripsi", editForm.deskripsi || "");
-              formData.append("jumlah", editForm.jumlah || "");
-              // Bukti baru jika ada, jika tidak tetap kirim yang lama
-              if (editForm.bukti instanceof File) {
-                formData.append("bukti", editForm.bukti);
-              }
-              formData.append("bukti_old", editForm.bukti_old || "");
-              // Kirim ke API, pastikan editTransaksi menerima FormData!
-              const resp = await editTransaksi(formData);
-              if (!resp.success) throw new Error("Gagal edit");
-              setSuccessMsg("Transaksi berhasil diubah!");
-              setShowEditModal(false);
-              setEditId(null);
-              const dt = await fetchTransaksi();
-              setData(dt);
-            } catch {
-              setErrorMsg("Gagal edit transaksi. " + e.message);
-            }
-          }}
-        >
+          onSubmit={handleEdit}>
           {/* Tanggal & Waktu */}
           
           <div>
