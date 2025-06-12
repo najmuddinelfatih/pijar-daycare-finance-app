@@ -7,7 +7,6 @@ export default function PengaturanIdentitas() {
   const [loading, setLoading] = useState(true);
   const [formNama, setFormNama] = useState("");
   const [formLogo, setFormLogo] = useState(null);
-  const [previewLogo, setPreviewLogo] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const fileInputRef = useRef();

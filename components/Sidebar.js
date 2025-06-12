@@ -11,6 +11,7 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
+import Image from "next/image";
 
 const menus = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -53,9 +54,11 @@ export default function Sidebar({ externalOpen, setExternalOpen }) {
       <aside className="hidden md:flex md:w-60 bg-blue-100 flex-col py-8 px-6 min-h-screen shadow-lg">
         <div className="mb-12">
           <Link href="/">
-          <img
+          <Image
             src="https://pijarmontessoriislam.id/api/public/logo_pijar_daycare_bekasi_v2.png"
             alt="Logo Daycare"
+            width={600}
+            height={400}
             className="w-[140px] h-auto"
           />
           </Link>
@@ -96,9 +99,11 @@ export default function Sidebar({ externalOpen, setExternalOpen }) {
           ☰
         </button>
         <Link href="/">
-        <img
+        <Image
           src="https://pijarmontessoriislam.id/api/public/logo_pijar_daycare_bekasi_v2.png"
           alt="Logo Daycare"
+          width={600}
+          height={400}
           className="h-8"
         />
         </Link>
