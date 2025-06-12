@@ -10,9 +10,9 @@ module.exports = {
     ],
   },
 };
-// next.config.js
-const nextConfig = {
-  output: "export", // ⬅️ wajib untuk static export
-};
+// // next.config.js
+// const nextConfig = {
+//   output: "export", // ⬅️ wajib untuk static export
+// };
 
-module.exports = nextConfig;
+// module.exports = nextConfig;
