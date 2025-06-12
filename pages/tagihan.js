@@ -80,6 +80,7 @@ export default function Tagihan() {
   const [user, setUser] = useState(null);
   const [showBuktiModal, setShowBuktiModal] = useState(false);
   const [buktiPreviewUrl, setBuktiPreviewUrl] = useState("");
+  const [buktiUrl, setBuktiUrl] = useState("");
 
 
   useEffect(() => {
@@ -548,20 +549,28 @@ export default function Tagihan() {
               />
             </div>
             <div>
-              <label className="block mb-1 font-bold text-gray-700 text-sm sm:text-base">Bukti Bayar (Opsional)</label>
-              <input
-                type="file"
-                ref={fileRefEdit}
-                accept="image/*,application/pdf"
-                className="w-full"
-                onChange={handleFileEdit}
-              />
-              {editForm.bukti_bayar_old &&
-                <a href={`/${editForm.bukti_bayar_old}`} target="_blank" rel="noopener noreferrer" className="block mt-2 text-blue-600 underline">
-                  <Paperclip size={16}/> Lihat Bukti Saat Ini
-                </a>
-              }
-            </div>
+            <label className="block mb-1 font-bold text-gray-700 text-sm sm:text-base">Bukti Bayar (Opsional)</label>
+            <input
+              type="file"
+              ref={fileRefEdit}
+              accept="image/*,application/pdf"
+              className="w-full"
+              onChange={handleFileEdit}
+            />
+            {editForm.bukti_bayar_old && (
+              <button
+                type="button"
+                onClick={() => {
+                  setBuktiUrl(`https://pijarmontessoriislam.id/api/${editForm.bukti_bayar_old}`);
+                  setShowBuktiModal(true);
+                }}
+                className="block mt-2 text-blue-600 underline"
+              >
+                <Paperclip size={16} className="inline-block mr-1" />
+                Lihat Bukti Saat Ini
+              </button>
+            )}
+          </div>
             <div className="flex gap-2 mt-3">
               <button type="submit" className="flex-1 py-2 rounded-xl bg-blue-500 text-white font-bold">{editId ? "Simpan" : "Tambah"}</button>
               <button type="button" className="flex-1 py-2 rounded-xl bg-gray-200" onClick={() => setShowEditModal(false)}>Batal</button>
@@ -576,7 +585,6 @@ export default function Tagihan() {
             </div>
           </form>
         </Modal>
-
         {/* Modal Konfirmasi Hapus */}
         <Modal
           show={showDeleteModal}
@@ -645,23 +653,25 @@ export default function Tagihan() {
           </div>
         </Modal>
         <div className="h-12"></div>
-        <Modal show={showBuktiModal} onClose={() => setShowBuktiModal(false)} title="Lihat Bukti Pembayaran">
-          <div className="p-4 flex justify-center items-center min-h-[200px]">
-            {buktiPreviewUrl.endsWith(".pdf") ? (
+        <Modal show={showBuktiModal} onClose={() => setShowBuktiModal(false)} title="Bukti Bayar">
+          <div className="flex flex-col items-center gap-4 p-4">
+            {!buktiUrl ? (
+              <div className="text-gray-500 italic">Tidak ada bukti yang bisa ditampilkan</div>
+            ) : buktiUrl.endsWith(".pdf") ? (
               <iframe
-                key={buktiPreviewUrl}
-                src={buktiPreviewUrl}
-                className="w-full h-[500px] border rounded"
-                title="Bukti Pembayaran PDF"
+                key={buktiUrl}
+                src={buktiUrl}
+                title="Bukti PDF"
+                className="w-full max-w-4xl h-[500px] border rounded-md shadow"
               />
             ) : (
               <Zoom>
                 <Image
-                  src={buktiPreviewUrl}
-                  alt="Bukti Pembayaran"
+                  src={buktiUrl}
+                  alt="Bukti Bayar"
                   width={600}
                   height={400}
-                  className="rounded shadow max-w-full h-auto"
+                  className="rounded-lg shadow max-w-full h-auto"
                 />
               </Zoom>
             )}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Modal from "../components/Modal";
 import dynamic from "next/dynamic";
-import {
+import { Paperclip,
   Calendar, FileText, Coins, Eye, Hash, Edit, Trash2, Receipt
 } from "lucide-react";
 import jsPDF from "jspdf";
@@ -813,14 +813,17 @@ const saldoBank = data
               className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
             {editForm.bukti_old && (
-              <a
-                href={`https://pijarmontessoriislam.id/api/${editForm.bukti_old}`}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={() => {
+                  setBuktiUrl(`https://pijarmontessoriislam.id/api/${editForm.bukti_old}`);
+                  setShowBuktiModal(true);
+                }}
                 className="block mt-2 text-blue-600 underline"
               >
+                <Paperclip size={16} className="inline-block mr-1" />
                 Lihat Bukti Saat Ini
-              </a>
+              </button>
             )}
             {editForm.bukti && (
               <div className="mt-2 text-xs text-blue-500 font-mono">{editForm.bukti.name}</div>
@@ -875,49 +878,30 @@ const saldoBank = data
         </Modal>
         {/* Modal Bukti */}
         <Modal show={showBuktiModal} onClose={() => setShowBuktiModal(false)} title="Lihat Bukti">
-          <div className="flex flex-col items-center gap-4 p-4">
-            {!buktiUrl ? (
-              <div className="text-gray-500 italic">Tidak ada bukti yang bisa ditampilkan</div>
-            ) : buktiUrl.endsWith(".pdf") ? (
-              <iframe
-                key={buktiUrl}
+        <div className="flex flex-col items-center gap-4 p-4">
+          {!buktiUrl ? (
+            <div className="text-gray-500 italic">Tidak ada bukti yang bisa ditampilkan</div>
+          ) : buktiUrl.endsWith(".pdf") ? (
+            <iframe
+              key={buktiUrl}
+              src={buktiUrl}
+              title="Bukti PDF"
+              className="w-full max-w-4xl h-[500px] border rounded-md shadow"
+            />
+          ) : (
+            <Zoom>
+              <Image
                 src={buktiUrl}
-                title="Bukti PDF"
-                className="w-full max-w-4xl h-[500px] border rounded-md shadow"
+                alt="Bukti Transfer"
+                width={600}
+                height={400}
+                className="rounded-lg shadow max-w-full h-auto"
               />
-            ) : (
-              <Zoom>
-                <Image
-                  src={buktiUrl}
-                  alt="Bukti Transfer"
-                  width={600}
-                  height={400}
-                  className="rounded-lg shadow max-w-full h-auto"
-                />
-              </Zoom>
-            )}
-          </div>
-        </Modal>
-        {/* <Modal show={showBuktiModal} onClose={() => setShowBuktiModal(false)} title="Lihat Bukti">
-          <div className="flex flex-col items-center gap-4 p-2">
-            {buktiUrl && (
-              buktiUrl.endsWith(".pdf") ? (
-                <iframe
-                  src={buktiUrl}
-                  className="w-full h-[500px] border rounded"
-                />
-              ) : (
-                <Zoom>
-                  <img
-                    src={buktiUrl}
-                    alt="Bukti Transfer"
-                    className="max-h-[400px] w-auto rounded shadow"
-                  />
-                </Zoom>
-              )
-            )}
-          </div>
-        </Modal> */}
+            </Zoom>
+          )}
+        </div>
+      </Modal>
+
         {errorMsg && <div className="text-red-600 text-sm mt-4">{errorMsg}</div>}
         {successMsg && <div className="text-green-700 text-sm mt-4">{successMsg}</div>}
       </main>
