@@ -79,7 +79,6 @@ export default function Tagihan() {
   const fileRefEdit = useRef();
   const [user, setUser] = useState(null);
   const [showBuktiModal, setShowBuktiModal] = useState(false);
-  const [buktiPreviewUrl, setBuktiPreviewUrl] = useState("");
   const [buktiUrl, setBuktiUrl] = useState("");
 
 
