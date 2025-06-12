@@ -1,7 +1,7 @@
 // pages/_app.js
 import "@/styles/globals.css";
 import { useState, useEffect } from "react";
-import { useSwipeable } from "react-swipeable";
+// import { useSwipeable } from "react-swipeable";
 import Sidebar from "@/components/Sidebar";
 import { useRouter } from "next/router"; // 🆕
 
@@ -12,13 +12,13 @@ export default function App({ Component, pageProps }) {
 
   useEffect(() => setHydrated(true), []);
 
-  const handlers = useSwipeable({
-    onSwipedRight: () => setSidebarOpen(true),
-    onSwipedLeft: () => setSidebarOpen(false),
-    delta: 50,
-    trackTouch: true,
-    preventScrollOnSwipe: true,
-  });
+  // const handlers = useSwipeable({
+  //   onSwipedRight: () => setSidebarOpen(true),
+  //   onSwipedLeft: () => setSidebarOpen(false),
+  //   delta: 50,
+  //   trackTouch: true,
+  //   preventScrollOnSwipe: true,
+  // });
 
   useEffect(() => {
   const u = JSON.parse(localStorage.getItem("user") || "{}");
@@ -42,7 +42,7 @@ export default function App({ Component, pageProps }) {
   const isSidebarHidden = hideSidebarRoutes.includes(router.pathname); // 🆕
 
   return (
-    <div {...handlers}>
+    <div>
       <div className={`md:flex`}>
         {!isSidebarHidden && (
           <Sidebar externalOpen={sidebarOpen} setExternalOpen={setSidebarOpen} />

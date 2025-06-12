@@ -1,6 +1,12 @@
 // next.config.js
 module.exports = {
   images: {
-    domains: ['pijarmontessoriislam.id'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'pijarmontessoriislam.id',
+        pathname: '/api/public/**',
+      },
+    ],
   },
-}
+};

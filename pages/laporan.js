@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { fetchTransaksi } from "../lib/apiTransaksi";
 import * as XLSX from "xlsx";
@@ -24,6 +24,25 @@ export default function Laporan() {
   const [filterEnd, setFilterEnd] = useState("");
 
   useEffect(() => { fetchTransaksi().then(setTransaksi); }, [router, authChecked]);
+  const [windowWidth, setWindowWidth] = useState(1200); // default
+    const marginChart = useMemo(() => {
+      if (windowWidth < 640) {
+        // Mobile (Tailwind sm breakpoint = 640px)
+        return { top: 10, right: 20, left: 20, bottom: 10 };
+      } else {
+        // Desktop
+        return { top: 20, right: 40, left: 40, bottom: 20 };
+      }
+    }, [windowWidth]);
+  
+    useEffect(() => {
+      if (typeof window !== "undefined") {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+      }
+    }, []);
 
   // Filter
   const filtered = transaksi.filter(t => {
@@ -201,14 +220,26 @@ export default function Laporan() {
             <div className="mb-8 bg-white rounded-xl shadow p-4">
               <div className="font-bold mb-2 text-sm">Grafik Arus Kas Bulanan</div>
               <ResponsiveContainer width="100%" height={280}>
-                <BarChart data={grafikBulanan}>
+                <BarChart
+                  data={grafikBulanan}
+                  margin={marginChart} // ← pakai yang responsif
+                >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="bulan" />
-                  <YAxis />
-                  <Tooltip />
+                  <XAxis
+                    dataKey="bulan"
+                    tick={{ fontSize: 11, fontWeight: 'bold', fill: '#1e293b' }}
+                  />
+                  <YAxis
+                    domain={[0, 'auto']}
+                    tickFormatter={(v) => `Rp. ${Number(v).toLocaleString("id-ID")}`}
+                    tick={{ fontSize: 11, fontWeight: 'bold', fill: '#1e293b' }}
+                  />
+                  <Tooltip
+                    formatter={(v) => `Rp. ${Number(v).toLocaleString("id-ID")}`}
+                  />
                   <Legend />
-                  <Bar dataKey="pemasukan" fill="#14b8a6" name="Pemasukan"/>
-                  <Bar dataKey="pengeluaran" fill="#ef4444" name="Pengeluaran"/>
+                  <Bar dataKey="pemasukan" fill="#14b8a6" name="Pemasukan" />
+                  <Bar dataKey="pengeluaran" fill="#ef4444" name="Pengeluaran" />
                 </BarChart>
               </ResponsiveContainer>
             </div>

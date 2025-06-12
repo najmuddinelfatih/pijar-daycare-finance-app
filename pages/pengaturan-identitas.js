@@ -74,9 +74,10 @@ export default function PengaturanIdentitas() {
             <label className="block font-semibold mb-1">Logo Daycare</label>
             <div className="flex gap-3 items-center">
               <Image
-                src={previewLogo || "/pijar-daycare-logo.png"}
+                src="https://pijarmontessoriislam.id/api/public/pijar-daycare-logo.png"
+                width={200}
+                height={100}
                 alt="Logo"
-                className="h-20 w-20 object-contain border rounded-xl bg-gray-100"
               />
               <button
                 className="px-3 py-2 rounded-xl bg-blue-500 text-white font-bold shadow hover:bg-blue-600 text-sm"

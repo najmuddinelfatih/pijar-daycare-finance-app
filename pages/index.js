@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { fetchTransaksi } from "../lib/apiTransaksi";
 import { fetchTagihan } from "../lib/apiTagihan";
@@ -6,6 +6,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { Bell, Clock, Users, TrendingUp, TrendingDown } from "lucide-react";
 import ReminderOperasionalTable from "../components/ReminderOperasionalTable";
 import { isBefore, parseISO, startOfDay } from "date-fns";
+
 
 export default function Dashboard() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function Dashboard() {
   const [tagihan, setTagihan] = useState([]);
   const [, setLoading] = useState(true);
   const COLORS = ["#6366f1", "#14b8a6", "#ef4444", "#f59e42", "#0ea5e9", "#6366f1", "#a855f7"];
- 
+  
 
   // 2. Cek login di useEffect pertama, lalu baru render dashboard
   useEffect(() => {
@@ -41,6 +42,26 @@ export default function Dashboard() {
       });
     }
   }, [authChecked]);
+
+  const [windowWidth, setWindowWidth] = useState(1200); // default
+  const marginChart = useMemo(() => {
+    if (windowWidth < 640) {
+      // Mobile (Tailwind sm breakpoint = 640px)
+      return { top: 10, right: 20, left: 20, bottom: 10 };
+    } else {
+      // Desktop
+      return { top: 20, right: 40, left: 40, bottom: 20 };
+    }
+  }, [windowWidth]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const handleResize = () => setWindowWidth(window.innerWidth);
+      handleResize();
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }
+  }, []);
 
   // 4. Jangan render apapun sebelum authChecked true
   if (!authChecked) {
@@ -76,7 +97,7 @@ export default function Dashboard() {
       .map(([bulan, v]) => ({ bulan, ...v }));
   }
   const grafikBulanan = groupByMonth(transaksi);
-
+  
   // =========== Notifikasi Tagihan Jatuh Tempo ===========
   const hariIni = startOfDay(now);
   const notifTagihan = tagihan.filter(t =>
@@ -155,14 +176,26 @@ export default function Dashboard() {
         <div className="bg-white rounded-xl shadow p-4 mb-6">
           <div className="font-bold mb-2 text-sm">Grafik Arus Kas 12 Bulan Terakhir</div>
           <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={grafikBulanan}>
+            <BarChart
+              data={grafikBulanan}
+              margin={marginChart} // ← pakai yang responsif
+            >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="bulan" />
-              <YAxis />
-              <Tooltip />
+              <XAxis
+                dataKey="bulan"
+                tick={{ fontSize: 11, fontWeight: 'bold', fill: '#1e293b' }}
+              />
+              <YAxis
+                domain={[0, 'auto']}
+                tickFormatter={(v) => `Rp. ${Number(v).toLocaleString("id-ID")}`}
+                tick={{ fontSize: 11, fontWeight: 'bold', fill: '#1e293b' }}
+              />
+              <Tooltip
+                formatter={(v) => `Rp. ${Number(v).toLocaleString("id-ID")}`}
+              />
               <Legend />
-              <Bar dataKey="pemasukan" fill="#14b8a6" name="Pemasukan"/>
-              <Bar dataKey="pengeluaran" fill="#ef4444" name="Pengeluaran"/>
+              <Bar dataKey="pemasukan" fill="#14b8a6" name="Pemasukan" />
+              <Bar dataKey="pengeluaran" fill="#ef4444" name="Pengeluaran" />
             </BarChart>
           </ResponsiveContainer>
         </div>

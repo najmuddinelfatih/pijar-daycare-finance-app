@@ -22,7 +22,7 @@ export default function PengaturanIdentitas() {
       const data = await fetchIdentitas();
       setIdentitas(data);
       setFormNama(data.nama || "");
-      setPreviewLogo(data.logo ? (data.logo.startsWith("http") ? data.logo : "/" + data.logo) : "");
+      setPreviewLogo(data.logo ? (data.logo.startsWith("https") ? data.logo : "/" + data.logo) : "");
       setErrorMsg("");
     } catch {
       setErrorMsg("Gagal mengambil data identitas.");
@@ -37,7 +37,7 @@ export default function PengaturanIdentitas() {
     setPreviewLogo(URL.createObjectURL(file));
   }
 
-  async function handleSubmit() {
+  async function handleSubmit(e) {
     e.preventDefault();
     setErrorMsg("");
     setSuccessMsg("");
@@ -73,11 +73,10 @@ export default function PengaturanIdentitas() {
             <label className="block font-semibold mb-1">Logo Daycare</label>
             <div className="flex gap-3 items-center">
               <Image
-                src={previewLogo || "/pijar-daycare-logo.png"}
+                src="https://pijarmontessoriislam.id/api/public/pijar-daycare-logo.png"
+                width={200}
+                height={100}
                 alt="Logo"
-                width={500}
-                height={500}
-                className="h-20 w-20 object-contain border rounded-xl bg-gray-100"
               />
               <button
                 className="px-3 py-2 rounded-xl bg-blue-500 text-white font-bold shadow hover:bg-blue-600 text-sm"

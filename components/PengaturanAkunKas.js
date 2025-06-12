@@ -31,7 +31,7 @@ export default function PengaturanAkunKas() {
     setLoading(false);
   }
 
-  async function handleSubmit() {
+  async function handleSubmit(e) {
     e.preventDefault();
     try {
       if (editId) {

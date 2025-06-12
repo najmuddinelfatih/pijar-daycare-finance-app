@@ -31,8 +31,8 @@ export default function PengaturanAkunKas() {
     setLoading(false);
   }
 
-  async function handleSubmit() {
-    preventDefault();
+  async function handleSubmit(e) {
+    e.preventDefault(); // ✅ penting
     try {
       if (editId) {
         await editAkunKas({ ...form, id: editId });
@@ -47,6 +47,7 @@ export default function PengaturanAkunKas() {
       setErrorMsg("Gagal menyimpan data. Cek koneksi/server.");
     }
   }
+
 
   async function handleDelete(id) {
     if (!window.confirm("Hapus akun kas ini?")) return;

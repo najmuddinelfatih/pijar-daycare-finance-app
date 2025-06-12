@@ -2,15 +2,23 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useSwipeable } from "react-swipeable"; // 🆕 Tambah ini
+import {
+  LayoutDashboard,
+  CreditCard,
+  Receipt,
+  FileBarChart,
+  Users,
+  Settings,
+  LogOut,
+} from "lucide-react";
 
 const menus = [
-  { label: "Dashboard", href: "/" },
-  { label: "Transaksi", href: "/transaksi" },
-  { label: "Tagihan Siswa", href: "/tagihan" },
-  { label: "Laporan", href: "/laporan" },
-  { label: "Pengguna", href: "/pengguna" },
-  { label: "Pengaturan", href: "/pengaturan" },
+  { label: "Dashboard", href: "/", icon: LayoutDashboard },
+  { label: "Transaksi", href: "/transaksi", icon: CreditCard },
+  { label: "Tagihan Siswa", href: "/tagihan", icon: Receipt },
+  { label: "Laporan", href: "/laporan", icon: FileBarChart },
+  { label: "Pengguna", href: "/pengguna", icon: Users },
+  { label: "Pengaturan", href: "/pengaturan", icon: Settings },
 ];
 
 function handleLogout() {
@@ -22,8 +30,7 @@ export default function Sidebar({ externalOpen, setExternalOpen }) {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const isOpen = externalOpen;
-const setIsOpen = setExternalOpen;
-
+  const setIsOpen = setExternalOpen;
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -32,99 +39,112 @@ const setIsOpen = setExternalOpen;
     }
   }, []);
 
-  // 🆕 Gesture Swipe
-  const swipeHandlers = useSwipeable({
-    onSwipedRight: () => setIsOpen(true),
-    onSwipedLeft: () => setIsOpen(false),
-    delta: 50, // minimum jarak swipe (px)
-    preventScrollOnSwipe: true,
-    trackTouch: true,
+  const role = (user?.role || "").toLowerCase();
+  const allowedMenus = menus.filter((menu) => {
+    if (menu.label === "Pengguna") {
+      return role === "admin";
+    }
+    return true;
   });
 
   return (
     <>
       {/* Sidebar Desktop */}
-      <aside className="hidden md:flex md:w-56 bg-blue-500 flex-col py-8 px-6 min-h-screen">
-        <div className="text-white text-3xl font-bold mb-12">Daycare</div>
-        <nav className="flex-1 flex flex-col gap-5 text-lg font-semibold">
-          {menus.map((menu) => (
-            <Link href={menu.href} key={menu.href}>
+      <aside className="hidden md:flex md:w-60 bg-blue-100 flex-col py-8 px-6 min-h-screen shadow-lg">
+        <div className="mb-12">
+          <Link href="/">
+          <img
+            src="https://pijarmontessoriislam.id/api/public/logo_pijar_daycare_bekasi_v2.png"
+            alt="Logo Daycare"
+            className="w-[140px] h-auto"
+          />
+          </Link>
+        </div>
+
+        <nav className="flex-1 flex flex-col gap-4 text-base font-medium">
+          {allowedMenus.map(({ label, href, icon: Icon }) => (
+            <Link href={href} key={href}>
               <span
-                className={`${
-                  router.pathname === menu.href
-                    ? "text-white"
-                    : "text-blue-100 hover:text-white"
-                } cursor-pointer transition`}
+                className={`flex items-center gap-3 px-2 py-2 rounded-lg cursor-pointer transition duration-200 ${
+                  router.pathname === href
+                    ? "bg-blue-200 text-blue-900"
+                    : "text-blue-700 hover:bg-blue-200"
+                }`}
               >
-                {menu.label}
+                <Icon size={18} />
+                {label}
               </span>
             </Link>
           ))}
         </nav>
         <div className="mt-auto flex flex-col items-center">
-          <div className="px-10 py-4 text-white font-bold">
+          <div className="px-4 py-2 text-blue-800 font-semibold">
             {user ? `Halo, ${user.nama}` : "Halo, ..."}
           </div>
           <button
             onClick={handleLogout}
-            className="px-3 py-1 rounded bg-red-500 text-white font-bold"
+            className="mt-2 px-4 py-2 rounded bg-red-500 text-white font-bold flex items-center gap-2"
           >
-            Logout
+            <LogOut size={16} /> Logout
           </button>
         </div>
       </aside>
 
       {/* Mobile Header */}
-      <div
-        className="md:hidden p-4 bg-blue-600 text-white flex justify-between items-center"
-        {...swipeHandlers} // 🆕 Tambahkan gesture ke wrapper mobile
-      >
+      <div className="md:hidden p-4 bg-blue-100 text-blue-700 flex justify-between items-center">
         <button onClick={() => setIsOpen(true)} className="text-2xl font-bold">
           ☰
         </button>
-        <span className="font-bold text-lg">Daycare</span>
+        <Link href="/">
+        <img
+          src="https://pijarmontessoriislam.id/api/public/logo_pijar_daycare_bekasi_v2.png"
+          alt="Logo Daycare"
+          className="h-8"
+        />
+        </Link>
       </div>
 
       {/* Sidebar Mobile */}
       <div
-        className={`fixed top-0 left-0 w-64 h-full bg-blue-500 z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 w-64 h-full bg-blue-100 z-50 transform transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } md:hidden flex flex-col py-8 px-6`}
+        } md:hidden flex flex-col py-8 px-6 shadow-lg`}
       >
         <div className="flex justify-between items-center mb-8">
-          <div className="text-white text-2xl font-bold">Menu</div>
+          <div className="text-blue-800 text-xl font-bold">Menu</div>
           <button
             onClick={() => setIsOpen(false)}
-            className="text-white text-2xl font-bold"
+            className="text-blue-700 text-2xl font-bold"
           >
             ×
           </button>
         </div>
-        <nav className="flex-1 flex flex-col gap-5 text-lg font-semibold">
-          {menus.map((menu) => (
-            <Link href={menu.href} key={menu.href}>
+        <nav className="flex-1 flex flex-col gap-4 text-base font-medium">
+          {allowedMenus.map(({ label, href, icon: Icon }) => (
+            <Link href={href} key={href}>
               <span
-                className={`${
-                  router.pathname === menu.href
-                    ? "text-white"
-                    : "text-blue-100 hover:text-white"
-                } cursor-pointer transition`}
+                className={`flex items-center gap-3 px-2 py-2 rounded-lg cursor-pointer transition duration-200 ${
+                  router.pathname === href
+                    ? "bg-blue-200 text-blue-900"
+                    : "text-blue-700 hover:bg-blue-200"
+                }`}
                 onClick={() => setIsOpen(false)}
               >
-                {menu.label}
+                <Icon size={18} />
+                {label}
               </span>
             </Link>
           ))}
         </nav>
         <div className="mt-auto flex flex-col items-center">
-          <div className="px-10 py-4 text-white font-bold">
+          <div className="px-4 py-2 text-blue-800 font-semibold">
             {user ? `Halo, ${user.nama}` : "Halo, ..."}
           </div>
           <button
             onClick={handleLogout}
-            className="px-3 py-1 rounded bg-red-500 text-white font-bold"
+            className="mt-2 px-4 py-2 rounded bg-red-500 text-white font-bold flex items-center gap-2"
           >
-            Logout
+            <LogOut size={16} /> Logout
           </button>
         </div>
       </div>
