@@ -30,8 +30,8 @@ export default function PengaturanKategori() {
     setLoading(false);
   }
 
-  async function handleSubmit() {
-    preventDefault();
+  async function handleSubmit(e) {
+    e.preventDefault();
     try {
       if (editId) {
         await editKategori({ ...form, id: editId });

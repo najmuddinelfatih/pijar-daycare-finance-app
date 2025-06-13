@@ -102,9 +102,9 @@ export default function Sidebar({ externalOpen, setExternalOpen }) {
         <Image
           src="https://pijarmontessoriislam.id/api/public/logo_pijar_daycare_bekasi_v2.png"
           alt="Logo Daycare"
-          width={600}
+          width={70}
           height={400}
-          className="h-8"
+          className="h-9"
         />
         </Link>
       </div>

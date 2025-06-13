@@ -104,9 +104,11 @@ function FormTransaksi({ form, akunKas, kategoriList, onChange, onJenisChange, o
           onChange={onKategoriChange}
           className="w-full rounded-2xl border-2 border-blue-200 focus:border-blue-500 outline-none px-4 py-3 bg-blue-50 text-sm sm:text-base font-medium transition"
         >
-          <option value="">Pilih Kategori</option>
-          {kategoriList.map(k => (
-            <option key={k.id} value={k.id}>{k.nama} ({k.jenis})</option>
+          <option value="">-- Pilih Kategori --</option>
+          {kategoriList.map((k) => (
+            <option key={k.id} value={k.id}>
+              {k.nama}
+            </option>
           ))}
         </select>
       </div>
@@ -118,11 +120,12 @@ function FormTransaksi({ form, akunKas, kategoriList, onChange, onJenisChange, o
             <input
               type="radio"
               name="jenis"
-              value="Pemasukan"
+              value={form.jenis}
               checked={form.jenis === "Pemasukan"}
               onChange={onJenisChange}
               className="accent-blue-500"
               required
+              readOnly
             />
             <span>Pemasukan</span>
           </label>
@@ -130,11 +133,12 @@ function FormTransaksi({ form, akunKas, kategoriList, onChange, onJenisChange, o
             <input
               type="radio"
               name="jenis"
-              value="Pengeluaran"
+              value={form.jenis}
               checked={form.jenis === "Pengeluaran"}
               onChange={onJenisChange}
               className="accent-blue-500"
               required
+              readOnly
             />
             <span>Pengeluaran</span>
           </label>
@@ -158,6 +162,7 @@ function FormTransaksi({ form, akunKas, kategoriList, onChange, onJenisChange, o
       <div>
         <label className="block mb-2 font-bold text-gray-700 text-sm sm:text-base">Bukti Transfer/Kwitansi/Nota</label>
         <input
+          required
           type="file"
           name="bukti"
           accept="image/*,application/pdf"
@@ -438,8 +443,16 @@ export default function Transaksi() {
   }
 
   function handleKategoriChange(e) {
-    setAddForm(f => ({ ...f, kategori_id: e.target.value }));
+  const kategoriId = e.target.value;
+  const kategori = kategoriList.find(k => k.id == kategoriId);
+
+    setAddForm(f => ({
+      ...f,
+      kategori_id: kategoriId,
+      jenis: kategori?.jenis || f.jenis, // overwrite jika ada
+    }));
   }
+
 
   // ===== Filtered data logic =====
   const filteredData = data.filter(row => {
@@ -724,7 +737,15 @@ const saldoBank = data
               name="kategori_id"
               required
               value={editForm.kategori_id}
-              onChange={e => setEditForm(f => ({ ...f, kategori_id: e.target.value }))}
+              onChange={e => {
+                const kategoriId = e.target.value;
+                const kategori = kategoriList.find(k => k.id == kategoriId);
+                setEditForm(f => ({
+                  ...f,
+                  kategori_id: kategoriId,
+                  jenis: kategori?.jenis || f.jenis,
+                }));
+              }}
               className="w-full rounded-2xl border-2 border-blue-200 focus:border-blue-500 outline-none px-4 py-3 bg-blue-50"
             >
               <option value="">Pilih Kategori</option>
@@ -741,6 +762,7 @@ const saldoBank = data
               required
               value={editForm.jenis}
               onChange={e => setEditForm(f => ({ ...f, jenis: e.target.value }))}
+              disabled={kategoriList.find(k => k.id == editForm.kategori_id)?.jenis}
               className="w-full rounded-2xl border-2 border-blue-200 focus:border-blue-500 outline-none px-4 py-3 bg-blue-50"
             >
               <option value="Pemasukan">Pemasukan</option>
