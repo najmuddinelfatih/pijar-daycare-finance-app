@@ -7,8 +7,8 @@ import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { Paperclip, CheckCircle, XCircle, Send } from "lucide-react";
 import { hasAccess } from "../lib/akses";
-import Image from "next/image";
-import Zoom from "react-medium-image-zoom";
+// import Image from "next/image";
+// import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 
 const DataTable = dynamic(() => import("react-data-table-component"), { ssr: false });
