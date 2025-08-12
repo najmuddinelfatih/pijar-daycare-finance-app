@@ -6,9 +6,9 @@ import { Paperclip,
   Calendar, FileText, Coins, Eye, Hash, Edit, Trash2, Receipt
 } from "lucide-react";
 import jsPDF from "jspdf";
-import Zoom from "react-medium-image-zoom";
+// import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
-import Image from "next/image";
+// import Image from "next/image";
 import {
   fetchTransaksi,
   tambahTransaksi,
