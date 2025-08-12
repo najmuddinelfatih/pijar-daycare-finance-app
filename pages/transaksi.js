@@ -8,7 +8,7 @@ import { Paperclip,
 import jsPDF from "jspdf";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
-import Image from "next/image";
+// import Image from "next/image";
 import {
   fetchTransaksi,
   tambahTransaksi,
@@ -900,29 +900,28 @@ const saldoBank = data
         </Modal>
         {/* Modal Bukti */}
         <Modal show={showBuktiModal} onClose={() => setShowBuktiModal(false)} title="Lihat Bukti">
-        <div className="flex flex-col items-center gap-4 p-4">
-          {!buktiUrl ? (
-            <div className="text-gray-500 italic">Tidak ada bukti yang bisa ditampilkan</div>
-          ) : buktiUrl.endsWith(".pdf") ? (
-            <iframe
-              key={buktiUrl}
-              src={buktiUrl}
-              title="Bukti PDF"
-              className="w-full max-w-4xl h-[500px] border rounded-md shadow"
-            />
-          ) : (
-            <Zoom>
-              <Image
+          <div className="flex flex-col items-center gap-4 p-4">
+            {!buktiUrl ? (
+              <div className="text-gray-500 italic">Tidak ada bukti yang bisa ditampilkan</div>
+            ) : buktiUrl.toLowerCase().endsWith(".pdf") ? (
+              <iframe
+                key={buktiUrl}
                 src={buktiUrl}
-                alt="Bukti Transfer"
-                width={600}
-                height={400}
-                className="rounded-lg shadow max-w-full h-auto"
+                title="Bukti PDF"
+                className="w-full max-w-4xl h-[500px] border rounded-md shadow"
               />
-            </Zoom>
-          )}
-        </div>
-      </Modal>
+            ) : (
+              <Zoom>
+                <img
+                  src={buktiUrl}
+                  alt="Bukti Transfer"
+                  className="rounded-lg shadow max-w-full h-auto"
+                  onError={(e)=>{ console.warn('Gagal load bukti:', buktiUrl); }}
+                />
+              </Zoom>
+            )}
+          </div>
+        </Modal>
 
         {errorMsg && <div className="text-red-600 text-sm mt-4">{errorMsg}</div>}
         {successMsg && <div className="text-green-700 text-sm mt-4">{successMsg}</div>}
