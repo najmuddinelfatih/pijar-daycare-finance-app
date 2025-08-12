@@ -652,7 +652,41 @@ export default function Tagihan() {
           </div>
         </Modal>
         <div className="h-12"></div>
+        {/* Modal Bukti */}
         <Modal show={showBuktiModal} onClose={() => setShowBuktiModal(false)} title="Bukti Bayar">
+          <div className="flex flex-col items-center gap-4 p-4">
+            {!buktiUrl ? (
+              <div className="text-gray-500 italic">Tidak ada bukti yang bisa ditampilkan</div>
+            ) : buktiUrl.toLowerCase().endsWith(".pdf") ? (
+              <>
+                <iframe
+                  key={buktiUrl}
+                  src={buktiUrl}
+                  title="Bukti PDF"
+                  referrerPolicy="no-referrer"
+                  className="w-full max-w-4xl h-[500px] border rounded-md shadow"
+                />
+                <a href={buktiUrl} target="_blank" rel="noreferrer" className="text-sm text-blue-600 underline">
+                  Buka di tab baru
+                </a>
+              </>
+            ) : (
+              <>
+                <img
+                  src={buktiUrl}
+                  alt="Bukti Bayar"
+                  referrerPolicy="no-referrer"
+                  className="rounded-lg shadow max-w-full h-auto"
+                  onError={() => console.warn("Gagal load bukti:", buktiUrl)}
+                />
+                <a href={buktiUrl} target="_blank" rel="noreferrer" className="text-sm text-blue-600 underline">
+                  Buka di tab baru
+                </a>
+              </>
+            )}
+          </div>
+        </Modal>
+        {/* <Modal show={showBuktiModal} onClose={() => setShowBuktiModal(false)} title="Bukti Bayar">
           <div className="flex flex-col items-center gap-4 p-4">
             {!buktiUrl ? (
               <div className="text-gray-500 italic">Tidak ada bukti yang bisa ditampilkan</div>
@@ -675,7 +709,7 @@ export default function Tagihan() {
               </Zoom>
             )}
           </div>
-        </Modal>
+        </Modal> */}
       </main>
     </div>
   );
