@@ -8,7 +8,7 @@ import { Paperclip,
 import jsPDF from "jspdf";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
-// import Image from "next/image";
+import Image from "next/image";
 import {
   fetchTransaksi,
   tambahTransaksi,
@@ -903,7 +903,7 @@ const saldoBank = data
           <div className="flex flex-col items-center gap-4 p-4">
             {!buktiUrl ? (
               <div className="text-gray-500 italic">Tidak ada bukti yang bisa ditampilkan</div>
-            ) : buktiUrl.toLowerCase().endsWith(".pdf") ? (
+            ) : buktiUrl.endsWith(".pdf") ? (
               <iframe
                 key={buktiUrl}
                 src={buktiUrl}
@@ -912,11 +912,13 @@ const saldoBank = data
               />
             ) : (
               <Zoom>
-                <img
+                <Image
                   src={buktiUrl}
                   alt="Bukti Transfer"
+                  width={600}
+                  height={400}
+                  unoptimized
                   className="rounded-lg shadow max-w-full h-auto"
-                  onError={(e)=>{ console.warn('Gagal load bukti:', buktiUrl); }}
                 />
               </Zoom>
             )}
