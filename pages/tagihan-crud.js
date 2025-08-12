@@ -29,7 +29,7 @@ export default function Tagihan() {
     setForm(isEdit && row ? {
       ...row,
       bukti_bayar: null,
-      bukti_bayar_old: row.bukti_bayar
+      bukti_bayar_old: row.bukti_bayar || "",
     } : {
       nama_siswa: "", wali_wa: "", bulan: "", keterangan: "",
       nominal: "", status: "Belum Lunas", tgl_tagihan: "", bukti_bayar: null, bukti_bayar_old: ""
