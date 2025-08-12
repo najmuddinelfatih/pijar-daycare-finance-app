@@ -905,30 +905,31 @@ const saldoBank = data
               <div className="text-gray-500 italic">Tidak ada bukti yang bisa ditampilkan</div>
             ) : buktiUrl.toLowerCase().endsWith(".pdf") ? (
               <>
+                {/* PDF: aktifkan toolbar & zoom bawaan browser */}
                 <iframe
                   key={buktiUrl}
-                  src={buktiUrl}
+                  src={`${buktiUrl}#toolbar=1&navpanes=0&view=FitH`} 
                   title="Bukti PDF"
                   referrerPolicy="no-referrer"
-                  className="w-full max-w-4xl h-[500px] border rounded-md shadow"
+                  className="w-full max-w-4xl h-[70vh] border rounded-md shadow"
                 />
                 <a href={buktiUrl} target="_blank" rel="noreferrer" className="text-sm text-blue-600 underline">
-                  Buka di tab baru
+                  Buka di tab baru (zoom penuh)
                 </a>
               </>
             ) : (
-              <>
+              // IMAGE: gunakan react-medium-image-zoom + <img> biasa
+              <Zoom zoomMargin={40}>
                 <img
+                  key={buktiUrl}
                   src={buktiUrl}
                   alt="Bukti Transfer"
                   referrerPolicy="no-referrer"
-                  className="rounded-lg shadow max-w-full h-auto"
+                  className="rounded-lg shadow max-w-full h-auto max-h-[70vh] cursor-zoom-in"
                   onError={() => console.warn("Gagal load bukti:", buktiUrl)}
+                  loading="lazy"
                 />
-                <a href={buktiUrl} target="_blank" rel="noreferrer" className="text-sm text-blue-600 underline">
-                  Buka di tab baru
-                </a>
-              </>
+              </Zoom>
             )}
           </div>
         </Modal>
