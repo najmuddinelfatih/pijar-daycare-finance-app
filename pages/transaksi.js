@@ -903,28 +903,35 @@ const saldoBank = data
           <div className="flex flex-col items-center gap-4 p-4">
             {!buktiUrl ? (
               <div className="text-gray-500 italic">Tidak ada bukti yang bisa ditampilkan</div>
-            ) : buktiUrl.endsWith(".pdf") ? (
-              <iframe
-                key={buktiUrl}
-                src={buktiUrl}
-                title="Bukti PDF"
-                className="w-full max-w-4xl h-[500px] border rounded-md shadow"
-              />
+            ) : buktiUrl.toLowerCase().endsWith(".pdf") ? (
+              <>
+                <iframe
+                  key={buktiUrl}
+                  src={buktiUrl}
+                  title="Bukti PDF"
+                  referrerPolicy="no-referrer"
+                  className="w-full max-w-4xl h-[500px] border rounded-md shadow"
+                />
+                <a href={buktiUrl} target="_blank" rel="noreferrer" className="text-sm text-blue-600 underline">
+                  Buka di tab baru
+                </a>
+              </>
             ) : (
-              <Zoom>
-                <Image
+              <>
+                <img
                   src={buktiUrl}
                   alt="Bukti Transfer"
-                  width={600}
-                  height={400}
-                  unoptimized
+                  referrerPolicy="no-referrer"
                   className="rounded-lg shadow max-w-full h-auto"
+                  onError={() => console.warn("Gagal load bukti:", buktiUrl)}
                 />
-              </Zoom>
+                <a href={buktiUrl} target="_blank" rel="noreferrer" className="text-sm text-blue-600 underline">
+                  Buka di tab baru
+                </a>
+              </>
             )}
           </div>
         </Modal>
-
         {errorMsg && <div className="text-red-600 text-sm mt-4">{errorMsg}</div>}
         {successMsg && <div className="text-green-700 text-sm mt-4">{successMsg}</div>}
       </main>
